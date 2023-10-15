@@ -28,3 +28,8 @@ the `lib/src/localization` directory.
 To support additional languages, please visit the tutorial on
 [Internationalizing Flutter
 apps](https://flutter.dev/docs/development/accessibility-and-localization/internationalization)
+
+
+## Creation of repo
+
+Followed this flow: https://codelabs.developers.google.com/codelabs/flutter-codelab-first#3
