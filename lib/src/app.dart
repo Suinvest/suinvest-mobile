@@ -1,11 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_locker/flutter_locker.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
+
+
+Future<void> canAuthenticate() async {
+    try {
+      final canAuthenticate = await FlutterLocker.canAuthenticate();
+
+      print('Can authenticate: $canAuthenticate');
+    } on Exception catch (exception) {
+      print(exception);
+    }
+  }
+
+
+Future<void> saveSecret(key, secret) async {
+    try {
+      await FlutterLocker.save(
+        SaveSecretRequest(
+            key: key,
+            secret: secret,
+            androidPrompt: AndroidPrompt(
+                title: 'Authenticate',
+                cancelLabel: 'Cancel',
+                descriptionLabel: 'Please authenticate')),
+      );
+
+      print('Secret saved, secret: $secret');
+    } on Exception catch (exception) {
+      print(exception);
+    }
+  }
+
+Future<void> retrieveSecret(key) async {
+    try {
+      final retrieved = await FlutterLocker.retrieve(RetrieveSecretRequest(
+          key: key,
+          androidPrompt: AndroidPrompt(
+              title: 'Authenticate',
+              cancelLabel: 'Cancel',
+              descriptionLabel: 'Please authenticate'),
+          iOsPrompt: IOsPrompt(touchIdText: 'Authenticate')));
+
+      print('Secret retrieved, secret: $retrieved');
+    } on Exception catch (exception) {
+      print(exception);
+    }
+  }
+
+
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {

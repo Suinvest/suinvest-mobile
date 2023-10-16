@@ -1,8 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_locker/flutter_locker.dart';
 
 import '../settings/settings_view.dart';
 import 'sample_item.dart';
 import 'sample_item_details_view.dart';
+
+Future<void> saveSecret(key, secret) async {
+    try {
+      await FlutterLocker.save(
+        SaveSecretRequest(
+            key: key,
+            secret: secret,
+            androidPrompt: AndroidPrompt(
+                title: 'Authenticate',
+                cancelLabel: 'Cancel',
+                descriptionLabel: 'Please authenticate')),
+      );
+
+      print('Secret saved, secret: $secret');
+    } on Exception catch (exception) {
+      print(exception);
+    }
+  }
+
+Future<void> retrieveSecret(key) async {
+    try {
+      final retrieved = await FlutterLocker.retrieve(RetrieveSecretRequest(
+          key: key,
+          androidPrompt: AndroidPrompt(
+              title: 'Authenticate',
+              cancelLabel: 'Cancel',
+              descriptionLabel: 'Please authenticate'),
+          iOsPrompt: IOsPrompt(touchIdText: 'Authenticate')));
+
+      print('Secret retrieved, secret: $retrieved');
+    } on Exception catch (exception) {
+      print(exception);
+    }
+  }
 
 /// Displays a list of SampleItems.
 class SampleItemListView extends StatelessWidget {
@@ -12,11 +47,13 @@ class SampleItemListView extends StatelessWidget {
   });
 
   static const routeName = '/';
-
+  
   final List<SampleItem> items;
 
   @override
   Widget build(BuildContext context) {
+    saveSecret("key", "test");
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sample Items'),
@@ -58,10 +95,7 @@ class SampleItemListView extends StatelessWidget {
               // Navigate to the details page. If the user leaves and returns to
               // the app after it has been killed while running in the
               // background, the navigation stack is restored.
-              Navigator.restorablePushNamed(
-                context,
-                SampleItemDetailsView.routeName,
-              );
+              retrieveSecret("key");
             }
           );
         },
