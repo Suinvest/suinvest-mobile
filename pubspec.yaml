@@ -12,10 +12,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_config: ^2.0.2
   flutter_keychain: ^2.4.0
   flutter_localizations:
     sdk: flutter
   flutter_locker: ^2.1.2
+  sui: ^0.1.0
 
 dev_dependencies:
   flutter_test:

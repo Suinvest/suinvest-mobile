@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locker/flutter_locker.dart';
 
+import 'package:sui/sui.dart';
+
 import '../settings/settings_view.dart';
 import 'sample_item.dart';
 import 'sample_item_details_view.dart';

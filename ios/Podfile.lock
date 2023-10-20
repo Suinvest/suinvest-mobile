@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_config (0.0.1):
+    - Flutter
   - flutter_keychain (0.0.1):
     - Flutter
   - flutter_locker (0.0.1):
@@ -9,6 +11,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_config (from `.symlinks/plugins/flutter_config/ios`)
   - flutter_keychain (from `.symlinks/plugins/flutter_keychain/ios`)
   - flutter_locker (from `.symlinks/plugins/flutter_locker/ios`)
 
@@ -19,6 +22,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_config:
+    :path: ".symlinks/plugins/flutter_config/ios"
   flutter_keychain:
     :path: ".symlinks/plugins/flutter_keychain/ios"
   flutter_locker:
@@ -26,6 +31,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_config: f48f0d47a284f1791aacce2687eabb3309ba7a41
   flutter_keychain: 01aabf894ffe8b01adfda1d9df21c210c1b4b452
   flutter_locker: 2d1b2e426eecaff7999596ff6cae78e1659e72df
   Locker: c4a5ed027ee0a6336e3f59de1237e89d3486d152

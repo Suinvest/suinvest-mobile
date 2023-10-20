@@ -5,6 +5,7 @@ import 'package:flutter_locker/flutter_locker.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
+import 'sample_feature/sui_example.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
@@ -53,7 +54,6 @@ Future<void> retrieveSecret(key) async {
       print(exception);
     }
   }
-
 
 
 /// The Widget that configures your application.
@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:
+                    return const SuiTest(title: "Test");
                   default:
                     return const SampleItemListView();
                 }
