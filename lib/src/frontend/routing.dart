@@ -29,9 +29,6 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.black,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.black54,
-        ),
       ),
       home: Scaffold(
         body: IndexedStack(
@@ -40,7 +37,6 @@ class _MyAppState extends State<MyApp> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
-          backgroundColor: Colors.black54, // Set the color directly
           items: [
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
