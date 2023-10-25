@@ -1,4 +1,4 @@
-# suiinvest
+# Suinvest
 
 A new Flutter project.
 
