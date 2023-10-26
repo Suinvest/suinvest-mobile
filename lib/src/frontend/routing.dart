@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:suiinvest/src/frontend/account.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatefulWidget {
+class AppRouter extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _AppRouterState createState() => _AppRouterState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _AppRouterState extends State<AppRouter> {
   final List<Widget> pages = [
     HomePage(),
     HomePage(),
