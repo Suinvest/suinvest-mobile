@@ -73,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  coingecko_api:
+    dependency: "direct main"
+    description:
+      name: coingecko_api
+      sha256: "0d21655e5ac5cd0df55a96655ba03c6ef02d9b4d95a0862823b68cc0b33bb243"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1+1"
   collection:
     dependency: transitive
     description:
