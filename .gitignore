@@ -48,3 +48,5 @@ ios/Podfile.lock
 
 # Key safety
 .env
+
+ios/Podfile.lock

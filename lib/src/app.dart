@@ -9,52 +9,49 @@ import 'sample_feature/sui_example.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
-
 Future<void> canAuthenticate() async {
-    try {
-      final canAuthenticate = await FlutterLocker.canAuthenticate();
+  try {
+    final canAuthenticate = await FlutterLocker.canAuthenticate();
 
-      print('Can authenticate: $canAuthenticate');
-    } on Exception catch (exception) {
-      print(exception);
-    }
+    print('Can authenticate: $canAuthenticate');
+  } on Exception catch (exception) {
+    print(exception);
   }
-
+}
 
 Future<void> saveSecret(key, secret) async {
-    try {
-      await FlutterLocker.save(
-        SaveSecretRequest(
-            key: key,
-            secret: secret,
-            androidPrompt: AndroidPrompt(
-                title: 'Authenticate',
-                cancelLabel: 'Cancel',
-                descriptionLabel: 'Please authenticate')),
-      );
-
-      print('Secret saved, secret: $secret');
-    } on Exception catch (exception) {
-      print(exception);
-    }
-  }
-
-Future<void> retrieveSecret(key) async {
-    try {
-      final retrieved = await FlutterLocker.retrieve(RetrieveSecretRequest(
+  try {
+    await FlutterLocker.save(
+      SaveSecretRequest(
           key: key,
+          secret: secret,
           androidPrompt: AndroidPrompt(
               title: 'Authenticate',
               cancelLabel: 'Cancel',
-              descriptionLabel: 'Please authenticate'),
-          iOsPrompt: IOsPrompt(touchIdText: 'Authenticate')));
+              descriptionLabel: 'Please authenticate')),
+    );
 
-      print('Secret retrieved, secret: $retrieved');
-    } on Exception catch (exception) {
-      print(exception);
-    }
+    print('Secret saved, secret: $secret');
+  } on Exception catch (exception) {
+    print(exception);
   }
+}
 
+Future<void> retrieveSecret(key) async {
+  try {
+    final retrieved = await FlutterLocker.retrieve(RetrieveSecretRequest(
+        key: key,
+        androidPrompt: AndroidPrompt(
+            title: 'Authenticate',
+            cancelLabel: 'Cancel',
+            descriptionLabel: 'Please authenticate'),
+        iOsPrompt: IOsPrompt(touchIdText: 'Authenticate')));
+
+    print('Secret retrieved, secret: $retrieved');
+  } on Exception catch (exception) {
+    print(exception);
+  }
+}
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
