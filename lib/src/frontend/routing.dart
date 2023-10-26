@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
           items: [
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
-              icon: Icon(Icons.home),
+              icon: const Icon(Icons.home),
               label: 'Page 1',
             ),
             BottomNavigationBarItem(
