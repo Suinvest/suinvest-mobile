@@ -16,9 +16,8 @@ class _MyAppState extends State<MyApp> {
     HomePage(),
     HomePage(),
     HomePage(),
-    // RoutingPage(),
+    // ListPage(),
     // ExchangePage(),
-    AccountSettingsPage(),
   ];
   int _currentIndex = 0;
 
@@ -28,7 +27,7 @@ class _MyAppState extends State<MyApp> {
       title: 'SUI Invest',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.black,
+        scaffoldBackgroundColor: Color.fromRGBO(14, 15, 19, 1),
       ),
       home: Scaffold(
         body: IndexedStack(
@@ -36,26 +35,25 @@ class _MyAppState extends State<MyApp> {
           children: pages,
         ),
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Color.fromRGBO(105, 143, 246, 1),
+          unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.25),
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
           currentIndex: _currentIndex,
+          backgroundColor: Color.fromRGBO(27, 28, 29, 1),
           items: [
             BottomNavigationBarItem(
-              backgroundColor: Colors.black,
-              icon: const Icon(Icons.home),
-              label: 'Page 1',
+              icon: Icon(Icons.home_outlined, size: 30.0),
+              label: '',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Page 1',
+              icon: Icon(Icons.query_stats, size: 30.0),
+              label: '',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Page 1',
+              icon: Icon(Icons.swap_horiz, size: 30.0),
+              label: '',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Page 1',
-            ),
-            // ... other items
           ],
           onTap: (index) {
             setState(() {

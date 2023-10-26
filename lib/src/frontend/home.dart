@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
                   const EdgeInsets.only(top: 70.0, left: 16.0, right: 16.0),
               children: [
                 Welcome(context),
-                SizedBox(height: 40.0),
+                SizedBox(height: 30.0),
                 buildPortfolio(context),
                 SizedBox(height: 40.0),
                 // _buildCard(context, "card 1", "show"),
