@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_locker/flutter_locker.dart';
+import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/account.dart';
+import 'package:suiinvest/src/services/authentication.dart';
+import 'package:flutter_config/flutter_config.dart';
+
 import 'package:suiinvest/src/frontend/home.dart';
 
 class AppRouter extends StatefulWidget {
@@ -8,14 +13,19 @@ class AppRouter extends StatefulWidget {
 }
 
 class _AppRouterState extends State<AppRouter> {
-  final List<Widget> pages = [
-    HomePage(),
-    HomePage(),
-    HomePage(),
-    // ListPage(),
-    // ExchangePage(),
-  ];
+  // final List<Widget> pages = [
+  //   HomePage(userAccount: userAccount),
+  //   HomePage(userAccount: userAccount),
+  //   HomePage(userAccount: userAccount),
+  // ];
   int _currentIndex = 0;
+  late Future<SuiAccount?> userAccount; // Declare userAccount as a Future
+  @override
+  void initState() {
+    super.initState();
+    saveSecret("private_key", FlutterConfig.get("SUI_PRIVATE_KEY")); // Save a secret (for testing purposes)
+    userAccount = fetchUserAccount(); // Initialize userAccount in initState
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +36,31 @@ class _AppRouterState extends State<AppRouter> {
         scaffoldBackgroundColor: Color.fromRGBO(14, 15, 19, 1),
       ),
       home: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: pages,
+        body: FutureBuilder<SuiAccount?>(
+          future: userAccount, // Use userAccount Future
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While the future is running, display a loading indicator or placeholder.
+              return CircularProgressIndicator(); // Replace with your loading widget.
+            } else if (snapshot.hasError) {
+              print('Error: ${snapshot.error}');
+              // If the future encounters an error, display an error message.
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // If the future completes successfully, build your widget based on the result.
+              SuiAccount? userAccount = snapshot.data; // Default value if null
+              print(userAccount);
+              // if (userAccount == null) then we prompt user to sign in
+              if (userAccount == null) {
+                return IndexedStack(
+                  index: _currentIndex,
+                  children: [],
+                );
+              }
+              // Use the userAccount in your widget.
+              return HomePage(userAccount: userAccount);
+            }
+          },
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: Color.fromRGBO(105, 143, 246, 1),

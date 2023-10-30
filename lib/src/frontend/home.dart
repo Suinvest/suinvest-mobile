@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:sui/sui.dart';
+import 'package:suiinvest/src/frontend/common/helpers/string.dart';
 class HomePage extends StatelessWidget {
+  // props
+  final SuiAccount userAccount;
+  //constructor
+  HomePage({required this.userAccount});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +19,7 @@ class HomePage extends StatelessWidget {
               padding:
                   const EdgeInsets.only(top: 70.0, left: 16.0, right: 16.0),
               children: [
-                Welcome(context),
+                Welcome(context, userAccount),
                 SizedBox(height: 30.0),
                 buildPortfolio(context),
                 SizedBox(height: 40.0),
@@ -78,7 +84,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-Widget Welcome(BuildContext context) {
+Widget Welcome(BuildContext context, SuiAccount userAccount) {
   return Container(
     padding: EdgeInsets.all(16.0),
     child: Column(
@@ -103,7 +109,7 @@ Widget Welcome(BuildContext context) {
               ),
             ),
             Text(
-              '0x23...ed',
+              trimUserAddress(userAccount.getAddress(), 6, 3),
               style: TextStyle(
                 color: Colors.grey[300],
                 fontSize: 16.0,

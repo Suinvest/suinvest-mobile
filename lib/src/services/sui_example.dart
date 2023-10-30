@@ -3,6 +3,17 @@ import 'package:sui/sui.dart';
 import 'package:sui/cryptography/signature.dart';
 import 'package:flutter_config/flutter_config.dart';
 
+// return type is bool of success when we store a key -> secret pair
+Future<SuiAccount?> buildUserFromPrivKey(privateKey) async {
+  try {
+    late SuiAccount account = SuiAccount.fromPrivateKey(privateKey, SignatureScheme.ED25519);
+    return account;
+  } on Exception catch (exception) {
+    print(exception);
+    return null;
+  }
+}
+
 class SuiTest extends StatefulWidget {
   const SuiTest({Key? key, required this.title}): super(key: key);
 
