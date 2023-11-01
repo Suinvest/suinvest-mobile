@@ -3,6 +3,7 @@ import 'package:flutter_locker/flutter_locker.dart';
 import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/account.dart';
 import 'package:suiinvest/src/services/authentication.dart';
+import 'package:suiinvest/src/services/sui.dart';
 import 'package:flutter_config/flutter_config.dart';
 
 import 'package:suiinvest/src/frontend/home.dart';
@@ -10,6 +11,13 @@ import 'package:suiinvest/src/frontend/home.dart';
 class AppRouter extends StatefulWidget {
   @override
   _AppRouterState createState() => _AppRouterState();
+}
+
+class Data {
+  SuiAccount userAccount;
+  List<CoinBalance> userBalances;
+
+  Data(this.userAccount, this.userBalances);
 }
 
 class _AppRouterState extends State<AppRouter> {
@@ -27,6 +35,18 @@ class _AppRouterState extends State<AppRouter> {
     userAccount = fetchUserAccount(); // Initialize userAccount in initState
   }
 
+  Future<Data> fetchData() async {
+    final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
+    final userCoins = await fetchCoinData(userAccount!.getAddress());
+  
+    if (userAccount != null && userCoins != null) {
+      return Data(userAccount, userCoins);
+    } else {
+      throw Exception('Failed to fetch data');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,8 +56,8 @@ class _AppRouterState extends State<AppRouter> {
         scaffoldBackgroundColor: Color.fromRGBO(14, 15, 19, 1),
       ),
       home: Scaffold(
-        body: FutureBuilder<SuiAccount?>(
-          future: userAccount, // Use userAccount Future
+        body: FutureBuilder<Data?>(
+          future: fetchData(), // Use userAccount Future
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // While the future is running, display a loading indicator or placeholder.
@@ -48,8 +68,10 @@ class _AppRouterState extends State<AppRouter> {
               return Text('Error: ${snapshot.error}');
             } else {
               // If the future completes successfully, build your widget based on the result.
-              SuiAccount? userAccount = snapshot.data; // Default value if null
+              SuiAccount? userAccount = snapshot.data!.userAccount; // Default value if null
+              List<CoinBalance> userBalances = snapshot.data!.userBalances; // Default value if null
               print(userAccount);
+              print(userBalances);
               // if (userAccount == null) then we prompt user to sign in
               if (userAccount == null) {
                 return IndexedStack(
@@ -58,7 +80,7 @@ class _AppRouterState extends State<AppRouter> {
                 );
               }
               // Use the userAccount in your widget.
-              return HomePage(userAccount: userAccount);
+              return HomePage(userAccount: userAccount, userBalances: userBalances);
             }
           },
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:suiinvest/src/frontend/routing.dart';
 
-import 'services/sui_example.dart';
+import 'services/sui.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
