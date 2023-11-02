@@ -1,5 +1,5 @@
 import 'package:flutter_locker/flutter_locker.dart';
-import 'package:suiinvest/src/services/sui_example.dart';
+import 'package:suiinvest/src/services/sui.dart';
 import 'package:sui/sui.dart';
 
 // return type is bool of if device can authenticate

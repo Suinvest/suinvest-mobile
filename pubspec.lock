@@ -321,10 +321,10 @@ packages:
     dependency: "direct main"
     description:
       name: sui
-      sha256: "19b935a643486cdff4d36df4df796defe79fc5730010341f8c96590baf059724"
+      sha256: c63a8068cd9bc6602ecdef3c751267727ffe4928e43eca82beade4fe0c36399d
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.2"
   term_glyph:
     dependency: transitive
     description:

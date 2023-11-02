@@ -4,8 +4,9 @@ import 'package:suiinvest/src/frontend/common/helpers/string.dart';
 class HomePage extends StatelessWidget {
   // props
   final SuiAccount userAccount;
+  final List<CoinBalance> userBalances;
   //constructor
-  HomePage({required this.userAccount});
+  HomePage({required this.userAccount, required this.userBalances});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,8 @@ class HomePage extends StatelessWidget {
                 SizedBox(height: 40.0),
                 // _buildCard(context, "card 1", "show"),
                 buildHealth(context),
+                SizedBox(height: 40.0),
+                listCoins(context, userBalances)
               ],
             ),
           ),
@@ -193,6 +196,26 @@ Widget buildHealth(BuildContext context) {
             label: 'Fully Diluted Valuation', value: '\$4,138,862,797'),
         EcosystemItem(label: 'Circulating Supply', value: '\$860,392,9597'),
       ],
+    ),
+  );
+}
+
+
+// example of how to use user fetched coins in front end
+Widget listCoins(BuildContext context, List<CoinBalance> userBalances) {
+  return Container(
+    padding: EdgeInsets.all(16.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12.0),
+      color: Color(0xFF1A1A1A),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: 
+        userBalances.map((coin) {
+          return Text(coin.totalBalance.toString(),
+              style: TextStyle(fontSize: 16));
+        }).toList(),
     ),
   );
 }
