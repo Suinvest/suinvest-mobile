@@ -9,12 +9,15 @@ import 'package:flutter_config/flutter_config.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
 class AppRouter extends StatefulWidget {
+  final SuiAccount? userAccount;
+  AppRouter({this.userAccount});
+
   @override
   _AppRouterState createState() => _AppRouterState();
 }
 
 class Data {
-  SuiAccount userAccount;
+  SuiAccount? userAccount;
   List<CoinBalance> userBalances;
 
   Data(this.userAccount, this.userBalances);
@@ -36,11 +39,10 @@ class _AppRouterState extends State<AppRouter> {
   }
 
   Future<Data> fetchData() async {
-    final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
-    final userCoins = await fetchCoinData(userAccount!.getAddress());
+    final userCoins = await fetchCoinData(widget.userAccount!.getAddress());
   
     if (userAccount != null && userCoins != null) {
-      return Data(userAccount, userCoins);
+      return Data(widget.userAccount, userCoins);
     } else {
       throw Exception('Failed to fetch data');
     }
@@ -68,7 +70,6 @@ class _AppRouterState extends State<AppRouter> {
               return Text('Error: ${snapshot.error}');
             } else {
               // If the future completes successfully, build your widget based on the result.
-              SuiAccount? userAccount = snapshot.data!.userAccount; // Default value if null
               List<CoinBalance> userBalances = snapshot.data!.userBalances; // Default value if null
               print(userAccount);
               print(userBalances);
@@ -79,8 +80,9 @@ class _AppRouterState extends State<AppRouter> {
                   children: [],
                 );
               }
+              print (widget.userAccount);
               // Use the userAccount in your widget.
-              return HomePage(userAccount: userAccount, userBalances: userBalances);
+              return HomePage(userAccount: widget.userAccount as SuiAccount);
             }
           },
         ),

@@ -1,21 +1,18 @@
 import 'package:coingecko_api/coingecko_api.dart';
+import 'package:coingecko_api/data/market.dart';
 
-class CoingeckoService {
-  static Future<List<dynamic>?> getPrice(
-      String coinId, String currency, int days) async {
+Future<List<Market>?> fetchCoinPrices(
+      List<String> coinIds, String currency) async {
     final api = CoinGeckoApi();
-    print('Calling method getCoinOHLC() ...');
-    final result = await api.coins.getCoinOHLC(
-      id: coinId,
+    print('fetching coinIds in fetchCoinPrices()');
+    print(coinIds);
+    final result = await api.coins.listCoinMarkets(
       vsCurrency: currency,
-      days: days,
+      coinIds: coinIds,
     );
+    print('response of coin data in fetchCoinPrices()');
+    print(result);
     if (!result.isError) {
-      print('getCoinOHLC() results:');
-      result.data.forEach(
-        (item) => print(
-            '${item.timestamp}: open = ${item.open}, high = ${item.high}, low = ${item.low}, close = ${item.close}'),
-      );
       return result.data;
     } else {
       print('getCoinOHLC() method returned error:');
@@ -24,4 +21,3 @@ class CoingeckoService {
     }
     return null;
   }
-}
