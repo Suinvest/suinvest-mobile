@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Padding(
         // Padding moved here to wrap the entire ListView
-        padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0),
+        padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16),
         child: Column(
           children: [
             SizedBox(height: 16),
