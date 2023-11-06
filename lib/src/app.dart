@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<SuiAccount?> fetchUserAccountObject() async {
     final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
+    swap(userAccount, "USDT", "USDC", true, 100, 100);
     if (userAccount == null) {
       print('Failed to fetch userAccount');
     } 

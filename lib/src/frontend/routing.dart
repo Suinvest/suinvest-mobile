@@ -71,8 +71,6 @@ class _AppRouterState extends State<AppRouter> {
             } else {
               // If the future completes successfully, build your widget based on the result.
               List<CoinBalance> userBalances = snapshot.data!.userBalances; // Default value if null
-              print(userAccount);
-              print(userBalances);
               // if (userAccount == null) then we prompt user to sign in
               if (userAccount == null) {
                 return IndexedStack(
@@ -80,7 +78,6 @@ class _AppRouterState extends State<AppRouter> {
                   children: [],
                 );
               }
-              print (widget.userAccount);
               // Use the userAccount in your widget.
               return HomePage(userAccount: widget.userAccount as SuiAccount);
             }
