@@ -19,6 +19,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_locker: ^2.1.2
+  http: ^1.1.0
   sui: ^0.1.0
   coingecko_api: ^1.1.1+1
 

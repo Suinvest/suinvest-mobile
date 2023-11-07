@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CryptoListItem extends StatelessWidget {
   final int rank;
@@ -10,6 +12,7 @@ class CryptoListItem extends StatelessWidget {
   final String symbol;
   final String price;
   final String change;
+  final String iconUrl;
 
   const CryptoListItem({
     Key? key,
@@ -18,6 +21,7 @@ class CryptoListItem extends StatelessWidget {
     required this.symbol,
     required this.price,
     required this.change,
+    required this.iconUrl,
   }) : super(key: key);
 
   @override
@@ -39,8 +43,11 @@ class CryptoListItem extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 18.0),
               ),
               SizedBox(width: 12.0),
-              Icon(FontAwesomeIcons.bitcoin,
-                  color: Colors.orange), // Placeholder icon
+              Image.network(
+                iconUrl,
+                width: 24, // Set your preferred width for the icon
+                height: 24, // Set your preferred height for the icon
+              ), // Placeholder icon
               SizedBox(width: 8.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,6 +82,27 @@ class CryptoListItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<List<CryptoListItem>> fetchCoins() async {
+  final response = await http.get(Uri.parse(
+      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false'));
+  if (response.statusCode == 200) {
+    List<dynamic> coinsJson = json.decode(response.body);
+    return coinsJson.map((json) {
+      final change = json['price_change_percentage_24h'] ?? 0.0;
+      return CryptoListItem(
+        rank: json['market_cap_rank'],
+        name: json['name'],
+        symbol: json['symbol'].toUpperCase(),
+        price: '\$${json['current_price']}',
+        change: '${change.toStringAsFixed(2)}%',
+        iconUrl: json['image'],
+      );
+    }).toList();
+  } else {
+    throw Exception('Failed to load coins');
   }
 }
 
@@ -117,19 +145,24 @@ class CoinPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Expanded(
-                child: ListView.builder(
-                  itemCount: 10, // The number of items in your list
-                  itemBuilder: (context, index) {
-                    return CryptoListItem(
-                      rank: index + 1,
-                      name: 'Bitcoin',
-                      symbol: 'BTC',
-                      price: '\$45,532.52',
-                      change: '-9.4%',
-                    );
+                child: FutureBuilder<List<CryptoListItem>>(
+                  future: fetchCoins(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (snapshot.hasData) {
+                      List<CryptoListItem> coins = snapshot.data!;
+                      return ListView(
+                        children: coins,
+                      );
+                    } else {
+                      return Center(child: Text('No coins found.'));
+                    }
                   },
                 ),
-              ),
+              )
             ],
           ),
         ),
