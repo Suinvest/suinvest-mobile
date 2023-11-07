@@ -1,99 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_locker/flutter_locker.dart';
 import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/account.dart';
-import 'package:suiinvest/src/services/authentication.dart';
-import 'package:suiinvest/src/services/sui.dart';
-import 'package:flutter_config/flutter_config.dart';
-
 import 'package:suiinvest/src/frontend/home.dart';
 
-class AppRouter extends StatefulWidget {
-  final SuiAccount? userAccount;
-  AppRouter({this.userAccount});
+class AppRouter extends StatelessWidget {
+  final SuiAccount userAccount;
 
-  @override
-  _AppRouterState createState() => _AppRouterState();
-}
-
-class Data {
-  SuiAccount? userAccount;
-  List<CoinBalance> userBalances;
-
-  Data(this.userAccount, this.userBalances);
-}
-
-class _AppRouterState extends State<AppRouter> {
-  // final List<Widget> pages = [
-  //   HomePage(userAccount: userAccount),
-  //   HomePage(userAccount: userAccount),
-  //   HomePage(userAccount: userAccount),
-  // ];
-  int _currentIndex = 0;
-  late Future<SuiAccount?> userAccount; // Declare userAccount as a Future
-  @override
-  void initState() {
-    super.initState();
-    saveSecret("private_key", FlutterConfig.get("SUI_PRIVATE_KEY")); // Save a secret (for testing purposes)
-    userAccount = fetchUserAccount(); // Initialize userAccount in initState
-  }
-
-  Future<Data> fetchData() async {
-    final userCoins = await fetchCoinData(widget.userAccount!.getAddress());
-  
-    if (userAccount != null && userCoins != null) {
-      return Data(widget.userAccount, userCoins);
-    } else {
-      throw Exception('Failed to fetch data');
-    }
-  }
-
+  AppRouter({required this.userAccount});
 
   @override
   Widget build(BuildContext context) {
+    int _selectedIndex = 0; // Start with the first index by default
+
+    // Define your pages here
+    final List<Widget> _pages = [
+      HomePage(userAccount: userAccount), // Replace with your HomePage widget
+      Text('Transaction Stats Page'),
+      Text('Token Swap Page'),
+      // Add more pages as needed
+    ];
+
+    // Function to handle navigation logic
+    void _onItemTapped(int index) {
+      // Use the Navigator to push the new page onto the navigation stack
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => _pages[index]),
+      );
+    }
+
+    // Use the userAccount to build your widget tree
     return MaterialApp(
       title: 'SUI Invest',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Color.fromRGBO(14, 15, 19, 1),
+        scaffoldBackgroundColor: const Color.fromRGBO(14, 15, 19, 1),
       ),
       home: Scaffold(
-        body: FutureBuilder<Data?>(
-          future: fetchData(), // Use userAccount Future
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // While the future is running, display a loading indicator or placeholder.
-              return CircularProgressIndicator(); // Replace with your loading widget.
-            } else if (snapshot.hasError) {
-              print('Error: ${snapshot.error}');
-              // If the future encounters an error, display an error message.
-              return Text('Error: ${snapshot.error}');
-            } else {
-              // If the future completes successfully, build your widget based on the result.
-              List<CoinBalance> userBalances = snapshot.data!.userBalances; // Default value if null
-              print(userAccount);
-              print(userBalances);
-              // if (userAccount == null) then we prompt user to sign in
-              if (userAccount == null) {
-                return IndexedStack(
-                  index: _currentIndex,
-                  children: [],
-                );
-              }
-              print (widget.userAccount);
-              // Use the userAccount in your widget.
-              return HomePage(userAccount: widget.userAccount as SuiAccount);
-            }
-          },
-        ),
+        body: HomePage(userAccount: userAccount),
         bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Color.fromRGBO(105, 143, 246, 1),
-          unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.25),
+          selectedItemColor: const Color.fromRGBO(105, 143, 246, 1),
+          unselectedItemColor: const Color.fromRGBO(255, 255, 255, 0.25),
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          currentIndex: _currentIndex,
-          backgroundColor: Color.fromRGBO(27, 28, 29, 1),
-          items: [
+          // Assuming currentIndex is managed by HomePage or another component.
+          currentIndex: 0, // Default to the first tab
+          backgroundColor: const Color.fromRGBO(27, 28, 29, 1),
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, size: 30.0),
               label: '',
@@ -108,9 +60,8 @@ class _AppRouterState extends State<AppRouter> {
             ),
           ],
           onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
+            _selectedIndex = index;
+            _onItemTapped(_selectedIndex);
           },
         ),
       ),
