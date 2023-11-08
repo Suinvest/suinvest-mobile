@@ -100,6 +100,9 @@ Future<List<CryptoListItem>> fetchCoins() async {
         iconUrl: json['image'],
       );
     }).toList();
+  } else if (response.statusCode == 429) {
+    print("Coingecko rate limited");
+    throw Exception('Coingecko rate limited');
   } else {
     throw Exception('Failed to load coins');
   }
