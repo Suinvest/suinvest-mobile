@@ -55,25 +55,17 @@ Future<dynamic> getPool(Coins.Coin coin1, Coins.Coin coin2) async {
   return desiredPool;
 }
 
-Future<double> getOtherAmount(Coins.Coin coin, bool buying, bool amountIn, double amount) async {
+Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async {
   double output = 0.0;
-  if ((buying && amountIn) || (!buying && !amountIn)) {
-    // amount of USDC -> SUI -> output of coin
-    dynamic pool1 = await getPool(Coins.USDC, Coins.SUI);
-    double suiAmount = amount * double.parse(pool1["price"]) * (1 - double.parse(pool1["fee"]));
-    dynamic pool2 = await getPool(coin, Coins.SUI);
-    output = suiAmount / double.parse(pool2["price"]) * (1 - double.parse(pool2["fee"]));
+  if (buying) {
+    // SUI -> coin
   } else {
-    // amount of coin -> SUI -> output of USDC
-    dynamic pool1 = await getPool(coin, Coins.SUI);
-    double suiAmount = amount * double.parse(pool1["price"]);
-    dynamic pool2 = await getPool(Coins.USDC, Coins.SUI);
-    output = suiAmount / double.parse(pool2["price"]);
+    // coin -> SUI
   }
   return output;
 }
 
-Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool a2b, bool byAmountIn, int amount) async {
+Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool a2b, int amount) async {
   if (userAccount == null) {
     throw Exception('Failed to fetch userAccount');
   }
@@ -90,9 +82,9 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
     tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
     tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
     coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
-    tx.pureBool(byAmountIn),              // by_amount_in: bool,
+    tx.pureBool(true),                    // by_amount_in: bool,
     tx.pureInt(amount),                   // amount: u64,
-    tx.pureInt(amount),                   // amount_limit: u64,
+    tx.pureInt(amount * 1000),            // amount_limit: u64,
     tx.pureInt(SQRT_PRICE_LIMIT),         // sqrt_price_limit: u128,
     tx.object(SUI_CLOCK)                  // clock: &Clock
   ]);
@@ -101,34 +93,20 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   return result.digest;
 }
 
-Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool buying, double amountIn, double amountOut) async{
+Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool buying, double amountIn) async{
   List<String> digests = [];
-  String digest1, digest2;
+  String digest1;
 
   if (buying) {
-    // We give amount USDC and want the equivalent of requested coin
-
-    // USDC to SUI, a2b (USDC-SUI pool)
-    int trueAmountIn = (amountIn * pow(10, Coins.USDC.decimals)).toInt();
-    digest1 = await swap(userAccount, Coins.USDC, Coins.SUI, true, true, trueAmountIn);
-    digests.add(digest1);
-
     // SUI to requested coin, b2a (XXX-SUI pool)
-    int trueAmountOut = (amountOut * pow(10, coin.decimals)).toInt();
-    digest2 = await swap(userAccount, coin, Coins.SUI, false, false, trueAmountOut);
-    digests.add(digest2);
-  } else {
-    // We give amount requested coin and want the equivalent of USDC
-
-    // Requested coin to SUI, a2b (XXX-SUI pool)
-    int trueAmountIn = (amountIn * pow(10, coin.decimals)).toInt();
-    digest1 = await swap(userAccount, coin, Coins.SUI, true, true, trueAmountIn);
+    int trueAmount = (amountIn * pow(10, Coins.SUI.decimals)).toInt();
+    digest1 = await swap(userAccount, coin, Coins.SUI, false, trueAmount);
     digests.add(digest1);
-
-    // SUI to USDC, b2a (USDC-SUI pool)
-    int trueAmountOut = (amountOut * pow(10, Coins.USDC.decimals)).toInt();
-    digest2 = await swap(userAccount, Coins.USDC, Coins.SUI, false, false, trueAmountOut);
-    digests.add(digest2);
+  } else {
+    // Requested coin to SUI, a2b (XXX-SUI pool)
+    int trueAmount = (amountIn * pow(10, coin.decimals)).toInt();
+    digest1 = await swap(userAccount, coin, Coins.SUI, true, trueAmount);
+    digests.add(digest1);
   }
   
   return digests;
