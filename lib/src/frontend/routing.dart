@@ -17,10 +17,13 @@ class _AppRouterState extends State<AppRouter> {
   int _selectedIndex = 0; // Start with the first index by default
   late final PageController _pageController;
 
+  SuiAccount? userAccount; // This is the variable we'll reference as the propagated userAccount object
+
   @override
   void initState() {
     super.initState();
-    if (widget.userAccount == null) {
+    userAccount = widget.userAccount; // Initialize userAccount in initState
+    if (userAccount == null) {
       // MAKE THIS SET THE INDEX TO THE SIGN IN PAGE
         // sign in page then will jump to home once the userAccount object is properly fetched
     }
