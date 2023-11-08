@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
+import 'package:suiinvest/src/frontend/coinPage.dart';
 import 'package:suiinvest/src/frontend/exchange.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
@@ -52,8 +53,8 @@ class _AppRouterState extends State<AppRouter> {
           },
           children: [
             //TODO: include more pages here
-            HomePage(userAccount: widget.userAccount),
-            HomePage(userAccount: widget.userAccount),
+            HomePage(userAccount: widget.userAccount, userBalances: []),
+            CoinPage(),
             ExchangePage(userAccount: widget.userAccount),
           ],
           physics: NeverScrollableScrollPhysics(), // Disable page swiping

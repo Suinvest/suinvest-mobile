@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/common/helpers/string.dart';
-import 'buildGreenChart.dart';
 
 class EcosystemItem extends StatelessWidget {
   final String label;

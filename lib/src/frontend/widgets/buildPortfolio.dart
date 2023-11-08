@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/common/helpers/string.dart';
+import 'package:suiinvest/src/common/helpers/string.dart';
 
 Widget buildPortfolio(BuildContext context) {
   return Center(
