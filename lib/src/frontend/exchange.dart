@@ -1,124 +1,87 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:sui/sui_account.dart';
+import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
 
-// class ExchangePage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Exchange Cryptocurrency'),
-//       ),
-//       body: ExchangeForm(),
-//     );
-//   }
-// }
+class ExchangePage extends StatefulWidget {
+  final SuiAccount userAccount;
 
-// class ExchangeForm extends StatefulWidget {
-//   @override
-//   _ExchangeFormState createState() => _ExchangeFormState();
-// }
+  // Constructor
+  ExchangePage({required this.userAccount});
 
-// class _ExchangeFormState extends State<ExchangeForm> {
-//   final _formKey = GlobalKey<FormState>();
-//   String _fromCurrency = 'Bitcoin';
-//   String _toCurrency = 'Ethereum';
-//   double _exchangeRate = 0.0;
-//   double _exchangeAmount = 0.0;
-//   double _estimatedAmount = 0.0;
+  @override
+  _ExchangePageState createState() => _ExchangePageState();
+}
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Form(
-//       key: _formKey,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: <Widget>[
-//           DropdownButtonFormField<String>(
-//             value: _fromCurrency,
-//             items: <String>['Bitcoin', 'Ethereum', 'Litecoin', 'Dogecoin']
-//                 .map<DropdownMenuItem<String>>((String value) {
-//               return DropdownMenuItem<String>(
-//                 value: value,
-//                 child: Text(value),
-//               );
-//             }).toList(),
-//             onChanged: (value) {
-//               setState(() {
-//                 _fromCurrency = value;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'From',
-//             ),
-//           ),
-//           TextFormField(
-//             keyboardType: TextInputType.number,
-//             onChanged: (value) {
-//               setState(() {
-//                 _exchangeAmount = double.tryParse(value) ?? 0.0;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'Amount',
-//             ),
-//             validator: (value) {
-//               if (value.isEmpty) {
-//                 return 'Please enter an amount';
-//               }
-//               return null;
-//             },
-//           ),
-//           DropdownButtonFormField<String>(
-//             value: _toCurrency,
-//             items: <String>['Bitcoin', 'Ethereum', 'Litecoin', 'Dogecoin']
-//                 .map<DropdownMenuItem<String>>((String value) {
-//               return DropdownMenuItem<String>(
-//                 value: value,
-//                 child: Text(value),
-//               );
-//             }).toList(),
-//             onChanged: (value) {
-//               setState(() {
-//                 _toCurrency = value;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'To',
-//             ),
-//           ),
-//           TextFormField(
-//             readOnly: true,
-//             initialValue: _estimatedAmount.toStringAsFixed(2),
-//             decoration: InputDecoration(
-//               labelText: 'Estimated Amount',
-//             ),
-//           ),
-//           SizedBox(height: 16.0),
-//           Center(
-//             child: RaisedButton(
-//               onPressed: () {
-//                 if (_formKey.currentState.validate()) {
-//                   submitExchangeRequest();
-//                 }
-//               },
-//               child: Text('Exchange'),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+class _ExchangePageState extends State<ExchangePage> {
+  final TextEditingController _myController = TextEditingController();
 
-//   void submitExchangeRequest() {
-//     // TODO: Send exchange request to SUI chain API
-//   }
-
-//   void calculateEstimatedAmount() {
-//     // TODO: Calculate estimated amount based on exchange rate
-//     setState(() {
-//       _estimatedAmount = _exchangeAmount * _exchangeRate;
-//     });
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Text('Exchange',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          Text(
+              'Account ${widget.userAccount.getAddress()}'), // Use the userAccount from the state
+          SizedBox(height: 30),
+          // insert widget here for
+          DropdownButton<String>(
+            items: <String>['ETH', 'BTC', 'LTC'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (_) {
+              // Handle token change
+            },
+          ),
+          TextField(
+            controller: _myController,
+            textAlign: TextAlign.center,
+            showCursor: false,
+            style: const TextStyle(fontSize: 40),
+            // Disable the default soft keybaord
+            keyboardType: TextInputType.none,
+          ), // Display the current input amount
+          DropdownButton<String>(
+            items: <String>['ETH', 'BTC', 'LTC'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (_) {
+              // Handle token change
+            },
+          ),
+          NumPad(
+            buttonSize: 75,
+            buttonColor: Colors.purple,
+            iconColor: Colors.deepOrange,
+            controller: _myController,
+            delete: () {
+              _myController.text = _myController.text
+                  .substring(0, _myController.text.length - 1);
+            },
+            // do something with the input numbers
+            onSubmit: () {
+              debugPrint('Your code: ${_myController.text}');
+              showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                        content: Text(
+                          "You code is ${_myController.text}",
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                      ));
+            },
+          ),
+          // ... other widgets ...
+        ],
+      ),
+    );
+  }
+}

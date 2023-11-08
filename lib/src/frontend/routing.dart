@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
+import 'package:suiinvest/src/frontend/exchange.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
 class AppRouter extends StatelessWidget {
@@ -15,7 +16,7 @@ class AppRouter extends StatelessWidget {
     final List<Widget> _pages = [
       HomePage(userAccount: userAccount), // Replace with your HomePage widget
       Text('Transaction Stats Page'),
-      Text('Token Swap Page'),
+      ExchangePage(userAccount: userAccount),
       // Add more pages as needed
     ];
 
