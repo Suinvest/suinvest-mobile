@@ -3,33 +3,41 @@ import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/exchange.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
-class AppRouter extends StatelessWidget {
+class AppRouter extends StatefulWidget {
   final SuiAccount userAccount;
 
   AppRouter({required this.userAccount});
 
   @override
+  _AppRouterState createState() => _AppRouterState();
+}
+
+class _AppRouterState extends State<AppRouter> {
+  int _selectedIndex = 0; // Start with the first index by default
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.jumpToPage(index); // Jump without animation
+    // or _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeIn); for animation
+  }
+
+  @override
   Widget build(BuildContext context) {
-    int _selectedIndex = 0; // Start with the first index by default
-
-    // Define your pages here
-    final List<Widget> _pages = [
-      HomePage(userAccount: userAccount), // Replace with your HomePage widget
-      Text('Transaction Stats Page'),
-      ExchangePage(userAccount: userAccount),
-      // Add more pages as needed
-    ];
-
-    // Function to handle navigation logic
-    void _onItemTapped(int index) {
-      // Use the Navigator to push the new page onto the navigation stack
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => _pages[index]),
-      );
-    }
-
-    // Use the userAccount to build your widget tree
     return MaterialApp(
       title: 'SUI Invest',
       theme: ThemeData(
@@ -37,33 +45,41 @@ class AppRouter extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromRGBO(14, 15, 19, 1),
       ),
       home: Scaffold(
-        body: HomePage(userAccount: userAccount),
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _selectedIndex = index);
+          },
+          children: [
+            //TODO: include more pages here
+            HomePage(userAccount: widget.userAccount),
+            HomePage(userAccount: widget.userAccount),
+            ExchangePage(userAccount: widget.userAccount),
+          ],
+          physics: NeverScrollableScrollPhysics(), // Disable page swiping
+        ),
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: const Color.fromRGBO(105, 143, 246, 1),
           unselectedItemColor: const Color.fromRGBO(255, 255, 255, 0.25),
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          // Assuming currentIndex is managed by HomePage or another component.
-          currentIndex: 0, // Default to the first tab
+          currentIndex: _selectedIndex,
           backgroundColor: const Color.fromRGBO(27, 28, 29, 1),
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, size: 30.0),
-              label: '',
+              label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.query_stats, size: 30.0),
-              label: '',
+              label: 'Stats',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.swap_horiz, size: 30.0),
-              label: '',
+              label: 'Exchange',
             ),
           ],
-          onTap: (index) {
-            _selectedIndex = index;
-            _onItemTapped(_selectedIndex);
-          },
+          onTap: onItemTapped,
         ),
       ),
     );
