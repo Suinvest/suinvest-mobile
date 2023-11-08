@@ -6,7 +6,7 @@ import 'package:suiinvest/src/frontend/coinPage.dart';
 import 'package:suiinvest/src/services/authentication.dart';
 import 'package:suiinvest/src/services/sui.dart';
 import 'package:flutter_config/flutter_config.dart';
-
+import 'package:suiinvest/src/frontend/loginPage.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
 class AppRouter extends StatefulWidget {
@@ -87,7 +87,7 @@ class _AppRouterState extends State<AppRouter> {
               }
               // Use the userAccount in your widget.
               // return HomePage(userAccount: userAccount, userBalances: userBalances);
-              return CoinPage();
+              return LoginScreen();
             }
           },
         ),
