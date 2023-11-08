@@ -8,9 +8,9 @@ import 'widgets/buildPortfolio.dart';
 class HomePage extends StatelessWidget {
   // props
   final SuiAccount userAccount;
-  final List<CoinBalance> userBalances;
+  // final List<CoinBalance> userBalances;
   //constructor
-  HomePage({required this.userAccount, required this.userBalances});
+  HomePage({required this.userAccount});
 
   @override
   Widget build(BuildContext context) {

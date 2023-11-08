@@ -1,124 +1,179 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:sui/sui_account.dart';
+import 'package:suiinvest/src/common/constants/colors.dart';
+import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
 
-// class ExchangePage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Exchange Cryptocurrency'),
-//       ),
-//       body: ExchangeForm(),
-//     );
-//   }
-// }
+class ExchangePage extends StatefulWidget {
+  final SuiAccount userAccount;
 
-// class ExchangeForm extends StatefulWidget {
-//   @override
-//   _ExchangeFormState createState() => _ExchangeFormState();
-// }
+  const ExchangePage({Key? key, required this.userAccount}) : super(key: key);
 
-// class _ExchangeFormState extends State<ExchangeForm> {
-//   final _formKey = GlobalKey<FormState>();
-//   String _fromCurrency = 'Bitcoin';
-//   String _toCurrency = 'Ethereum';
-//   double _exchangeRate = 0.0;
-//   double _exchangeAmount = 0.0;
-//   double _estimatedAmount = 0.0;
+  @override
+  _ExchangePageState createState() => _ExchangePageState();
+}
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Form(
-//       key: _formKey,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: <Widget>[
-//           DropdownButtonFormField<String>(
-//             value: _fromCurrency,
-//             items: <String>['Bitcoin', 'Ethereum', 'Litecoin', 'Dogecoin']
-//                 .map<DropdownMenuItem<String>>((String value) {
-//               return DropdownMenuItem<String>(
-//                 value: value,
-//                 child: Text(value),
-//               );
-//             }).toList(),
-//             onChanged: (value) {
-//               setState(() {
-//                 _fromCurrency = value;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'From',
-//             ),
-//           ),
-//           TextFormField(
-//             keyboardType: TextInputType.number,
-//             onChanged: (value) {
-//               setState(() {
-//                 _exchangeAmount = double.tryParse(value) ?? 0.0;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'Amount',
-//             ),
-//             validator: (value) {
-//               if (value.isEmpty) {
-//                 return 'Please enter an amount';
-//               }
-//               return null;
-//             },
-//           ),
-//           DropdownButtonFormField<String>(
-//             value: _toCurrency,
-//             items: <String>['Bitcoin', 'Ethereum', 'Litecoin', 'Dogecoin']
-//                 .map<DropdownMenuItem<String>>((String value) {
-//               return DropdownMenuItem<String>(
-//                 value: value,
-//                 child: Text(value),
-//               );
-//             }).toList(),
-//             onChanged: (value) {
-//               setState(() {
-//                 _toCurrency = value;
-//               });
-//               calculateEstimatedAmount();
-//             },
-//             decoration: InputDecoration(
-//               labelText: 'To',
-//             ),
-//           ),
-//           TextFormField(
-//             readOnly: true,
-//             initialValue: _estimatedAmount.toStringAsFixed(2),
-//             decoration: InputDecoration(
-//               labelText: 'Estimated Amount',
-//             ),
-//           ),
-//           SizedBox(height: 16.0),
-//           Center(
-//             child: RaisedButton(
-//               onPressed: () {
-//                 if (_formKey.currentState.validate()) {
-//                   submitExchangeRequest();
-//                 }
-//               },
-//               child: Text('Exchange'),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+class _ExchangePageState extends State<ExchangePage> {
+  final TextEditingController _myController = TextEditingController();
+  String swapFrom = 'ETH';
+  String swapTo = 'ETH';
 
-//   void submitExchangeRequest() {
-//     // TODO: Send exchange request to SUI chain API
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          const SizedBox(height: 80),
+          const Text(
+            'Exchange',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Account ${_formattedAddress(widget.userAccount.getAddress())}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _buildDropdownButton('From', swapFrom, (newValue) {
+            setState(() => swapFrom = newValue!);
+          }),
+          _buildTextField(),
+          _buildArrowDivider(),
+          _buildDropdownButton('To', swapTo, (newValue) {
+            setState(() => swapTo = newValue!);
+          }),
+          const SizedBox(height: 10),
+          _buildNumPad(),
+          const SizedBox(height: 30),
+          _buildSwapButton(),
+        ],
+      ),
+    );
+  }
 
-//   void calculateEstimatedAmount() {
-//     // TODO: Calculate estimated amount based on exchange rate
-//     setState(() {
-//       _estimatedAmount = _exchangeAmount * _exchangeRate;
-//     });
-//   }
-// }
+  String _formattedAddress(String address) {
+    return '0x${address.substring(0, 7)}....${address.substring(address.length - 5)}';
+  }
+
+  Widget _buildDropdownButton(
+      String label, String value, ValueChanged<String?> onChanged) {
+    return DropdownButton<String>(
+      dropdownColor: AppColors.backgroundGrey,
+      style: const TextStyle(
+          color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+      value: value,
+      items: <String>['ETH', 'BTC', 'LTC'].map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildTextField() {
+    return TextField(
+      controller: _myController,
+      textAlign: TextAlign.center,
+      showCursor: false,
+      style: const TextStyle(fontSize: 40, color: Colors.white),
+      keyboardType: TextInputType.none,
+      decoration: const InputDecoration(border: InputBorder.none),
+    );
+  }
+
+  Widget _buildArrowDivider() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.only(left: 10.0, right: 5.0),
+            child: const Divider(
+              color: Colors.white,
+              height: 1.5,
+              thickness: 1,
+            ),
+          ),
+        ),
+        Icon(
+          Icons.arrow_downward,
+          color: AppColors.buttonBlue,
+        ),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.only(left: 5.0, right: 10.0),
+            child: const Divider(
+              color: Colors.white,
+              height: 1.5,
+              thickness: 1,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNumPad() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 30),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundGrey,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: NumPad(
+        buttonSize: 40,
+        controller: _myController,
+        delete: _handleNumPadDelete,
+      ),
+    );
+  }
+
+  void _handleNumPadDelete() {
+    if (_myController.text.isNotEmpty) {
+      setState(() {
+        _myController.text =
+            _myController.text.substring(0, _myController.text.length - 1);
+      });
+    }
+  }
+
+  Widget _buildSwapButton() {
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(AppColors.buttonBlue),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
+      onPressed: _handleSwap,
+      child: const Text(
+        'SWAP',
+        style: TextStyle(color: Colors.white, fontSize: 15),
+      ),
+    );
+  }
+
+  void _handleSwap() {
+    // Implement your swap logic here
+    debugPrint('Your code: ${_myController.text}');
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Text(
+          "You code is ${_myController.text}",
+          style: const TextStyle(fontSize: 30),
+        ),
+      ),
+    );
+  }
+}

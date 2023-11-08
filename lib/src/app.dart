@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/routing.dart';
 
-import 'services/sui.dart';
-
-/// The Widget that configures your application.
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SuiAccount userAccount;
+
+  MyApp({Key? key, required this.userAccount}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AppRouter();
+    // If there is an error, return an error widget.
+
+    return MaterialApp(
+      title: 'SUI Invest',
+      home: AppRouter(userAccount: userAccount),
+    );
   }
 }
