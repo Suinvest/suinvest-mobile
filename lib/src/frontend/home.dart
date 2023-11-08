@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/common/helpers/string.dart';
+// import 'package:suiinvest/src/frontend/common/helpers/string.dart';
 import 'widgets/ecosystem_item.dart';
 import 'widgets/welcome.dart';
 import 'widgets/buildPortfolio.dart';
@@ -8,9 +8,9 @@ import 'widgets/buildPortfolio.dart';
 class HomePage extends StatelessWidget {
   // props
   final SuiAccount userAccount;
-  // final List<CoinBalance> userBalances;
+  final List<CoinBalance> userBalances;
   //constructor
-  HomePage({required this.userAccount});
+  HomePage({required this.userAccount, required this.userBalances});
 
   @override
   Widget build(BuildContext context) {
