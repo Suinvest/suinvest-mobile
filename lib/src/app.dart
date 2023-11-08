@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:sui/sui.dart';
-
 import 'package:suiinvest/src/frontend/routing.dart';
 import 'package:suiinvest/src/frontend/account.dart';
 import 'package:suiinvest/src/services/authentication.dart';
-import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
 
-import 'services/sui.dart';
+class MyApp extends StatelessWidget {
+  final SuiAccount userAccount;
 
 class MyApp extends StatefulWidget {
   @override
@@ -23,20 +21,20 @@ class _MyAppState extends State<MyApp> {
 
   Future<SuiAccount?> fetchUserAccountObject() async {
     final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
-    // swap(userAccount, "USDT", "USDC", true, 100, 100);
     if (userAccount == null) {
       print('Failed to fetch userAccount');
     } 
     return userAccount;
   }
+  MyApp({Key? key, required this.userAccount}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SuiAccount?>(
-      future: fetchUserAccountObject(), // Use data Future
-      builder: (context, snapshot) {
-        return AppRouter(userAccount: snapshot.data);
-      },
+    // If there is an error, return an error widget.
+
+    return MaterialApp(
+      title: 'SUI Invest',
+      home: AppRouter(userAccount: userAccount),
     );
   }
 }
