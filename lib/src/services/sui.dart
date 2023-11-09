@@ -65,6 +65,18 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
   return output;
 }
 
+Future<List<String>> getCoinObjectIds(String address, Coins.Coin coin) async {
+  final objects = await client.getOwnedObjects(address);
+  print(objects);
+  final coinIds = objects
+    .data
+    .where((x) => Coin.isCoin(x))
+    .map((y) => y.data!.objectId);
+
+  print(coinIds);
+  return [];
+}
+
 Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool a2b, int amount) async {
   if (userAccount == null) {
     throw Exception('Failed to fetch userAccount');
@@ -76,7 +88,8 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   tx.setGasBudget(BigInt.from(20000000));
 
   // Get coin vector (if a2b we need coin1, otherwise coin2)
-  var coinsAVec = tx.makeMoveVec(objects: {});
+  var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), a2b ? coin1 : coin2);
+  var coinsAVec = tx.makeMoveVec(objects: coinObjectIds);
 
   tx.moveCall("$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${a2b?'a2b':'b2a'}", arguments: [
     tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
