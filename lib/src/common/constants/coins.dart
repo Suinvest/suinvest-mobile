@@ -5,6 +5,7 @@ class Coin {
   String icon;
   String coinGeckoId;
   int decimals;
+  String testnet;
 
   Coin({
     required this.address,
@@ -13,6 +14,7 @@ class Coin {
     required this.icon,
     required this.coinGeckoId,
     required this.decimals,
+    this.testnet = "NONE"
   });
 }
 
@@ -21,8 +23,9 @@ final SUI = Coin(
   symbol: "SUI",
   name: "Sui",
   decimals: 9,
-  icon: "",
-  coinGeckoId: "sui"
+  icon: "https://assets.coingecko.com/coins/images/26375/standard/sui_asset.jpeg",
+  coinGeckoId: "sui",
+  testnet: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
 );
 
 final CETUS = Coin(
@@ -30,8 +33,9 @@ final CETUS = Coin(
   symbol: "CETUS",
   name: "Cetus Token",
   decimals: 9,
-  icon: "",
-  coinGeckoId: "cetus-protocol"
+  icon: "https://assets.coingecko.com/coins/images/30256/standard/cetus.png",
+  coinGeckoId: "cetus-protocol",
+  testnet: "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::cetus::CETUS"
 );
 
 final USDC = Coin(
@@ -39,8 +43,9 @@ final USDC = Coin(
   symbol: "USDC",
   name: "USD Coin",
   decimals: 6,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/6319/standard/usdc.png",
+  coinGeckoId: "usdc",
+  testnet: "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::usdc::USDC"
 );
 
 final USDT = Coin(
@@ -48,8 +53,8 @@ final USDT = Coin(
   symbol: "USDT",
   name: "Tether USD",
   decimals: 6,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/325/standard/Tether.png",
+  coinGeckoId: "tether"
 );
 
 final WETH = Coin(
@@ -57,8 +62,8 @@ final WETH = Coin(
   symbol: "WETH",
   name: "Wrapped ETH",
   decimals: 8,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/279/standard/ethereum.png",
+  coinGeckoId: "weth"
 );
 
 final SUIA = Coin(
@@ -66,8 +71,8 @@ final SUIA = Coin(
   symbol: "SUIA",
   name: "Suia.io Token",
   decimals: 9,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/30385/standard/suia.jpg",
+  coinGeckoId: "suia"
 );
 
 final SUIP = Coin(
@@ -75,8 +80,8 @@ final SUIP = Coin(
   symbol: "SUIP",
   name: "SuiPad",
   decimals: 9,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/30284/standard/25100.png",
+  coinGeckoId: "suipad"
 );
 
 final WSOL = Coin(
@@ -84,44 +89,35 @@ final WSOL = Coin(
   symbol: "WSOL",
   name: "Wrapped SOL",
   decimals: 8,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/4128/standard/solana.png",
+  coinGeckoId: "solana"
 );
 
-// final REAP = Coin(
-//   address: "0xde2d3e02ba60b806f81ee9220be2a34932a513fe8d7f553167649e95de21c066::reap_token::REAP_TOKEN",
-//   symbol: "",
-//   name: "",
-//   decimals: 0,
-//   icon: "",
-//   coinGeckoId: ""
-// );
+final REAP = Coin(
+  address: "0xde2d3e02ba60b806f81ee9220be2a34932a513fe8d7f553167649e95de21c066::reap_token::REAP_TOKEN",
+  symbol: "REAP",
+  name: "Releap Token",
+  decimals: 9,
+  icon: "https://assets.coingecko.com/coins/images/31161/standard/Releap_logomark_color_%281%29.png",
+  coinGeckoId: "releap"
+);
 
 final WBTC = Coin(
   address: "0x027792d9fed7f9844eb4839566001bb6f6cb4804f66aa2da6fe1ee242d896881::coin::COIN",
   symbol: "WBTC",
   name: "Wrapped BTC",
   decimals: 8,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/7598/standard/wrapped_bitcoin_wbtc.png",
+  coinGeckoId: "wrapped-bitcoin"
 );
-
-// final SBOX = Coin(
-//   address: "0xbff8dc60d3f714f678cd4490ff08cabbea95d308c6de47a150c79cc875e0c7c6::sbox::SBOX",
-//   symbol: "",
-//   name: "",
-//   decimals: 0,
-//   icon: "",
-//   coinGeckoId: ""
-// );
 
 final WMATIC = Coin(
   address: "0xdbe380b13a6d0f5cdedd58de8f04625263f113b3f9db32b3e1983f49e2841676::coin::COIN",
   symbol: "WMATIC",
   name: "Wrapped MATIC",
   decimals: 8,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/14073/standard/matic.png",
+  coinGeckoId: "wmatic"
 );
 
 final WBNB = Coin(
@@ -129,8 +125,17 @@ final WBNB = Coin(
   symbol: "WBNB",
   name: "Wrapped BNB",
   decimals: 8,
-  icon: "",
-  coinGeckoId: ""
+  icon: "https://assets.coingecko.com/coins/images/12591/standard/binance-coin-logo.png",
+  coinGeckoId: "wbnb"
+);
+
+final SSWP = Coin(
+  address: "0x361dd589b98e8fcda9a7ee53b85efabef3569d00416640d2faa516e3801d7ffc::TOKEN::TOKEN",
+  symbol: "SSWP",
+  name: "Suiswap",
+  decimals: 9,
+  icon: "https://assets.coingecko.com/coins/images/30688/standard/suiswap-200.png",
+  coinGeckoId: "suiswap"
 );
 
 // final MED = Coin(
@@ -142,8 +147,8 @@ final WBNB = Coin(
 //   coinGeckoId: ""
 // );
 
-// final SSWP = Coin(
-//   address: "0x361dd589b98e8fcda9a7ee53b85efabef3569d00416640d2faa516e3801d7ffc::TOKEN::TOKEN",
+// final SBOX = Coin(
+//   address: "0xbff8dc60d3f714f678cd4490ff08cabbea95d308c6de47a150c79cc875e0c7c6::sbox::SBOX",
 //   symbol: "",
 //   name: "",
 //   decimals: 0,
@@ -160,11 +165,11 @@ final List<Coin> COINS = [
   SUIA,
   SUIP,
   WSOL,
-  // REAP,
+  REAP,
   WBTC,
-  // SBOX,
   WMATIC,
   WBNB,
+  SSWP,
+  // SBOX,
   // MED,
-  // SSWP
 ];
