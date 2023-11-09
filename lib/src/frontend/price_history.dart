@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:coingecko_api/data/ohlc_info.dart';
-import 'package:suiinvest/src/services/coingecko.dart';
+import 'package:http/http.dart' as http;
+import 'package:your_project_path/ohlc_info.dart'; // Replace with your actual import path
 
 class CoinDetailPage extends StatefulWidget {
   final String coinId;
@@ -14,13 +15,23 @@ class CoinDetailPage extends StatefulWidget {
 }
 
 class _CoinDetailPageState extends State<CoinDetailPage> {
-  late Future<List<OHLCInfo>?> ohlcDataFuture;
+  late Future<List<OHLCInfo>> ohlcDataFuture;
 
   @override
   void initState() {
     super.initState();
-    // Fetch the OHLC data for the past 7 days
-    ohlcDataFuture = fetchCoinOHLC(widget.coinId, 'usd', 7);
+    ohlcDataFuture = fetchCoinOHLC(widget.coinId);
+  }
+
+  Future<List<OHLCInfo>> fetchCoinOHLC(String coinId) async {
+    final response = await http.get(Uri.parse(
+      'https://api.coingecko.com/api/v3/coins/$coinId/ohlc?vs_currency=usd&days=7'));
+    if (response.statusCode == 200) {
+      final ohlcJson = json.decode(response.body) as List;
+      return ohlcJson.map((json) => OHLCInfo.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load OHLC data');
+    }
   }
 
   @override
@@ -29,7 +40,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(
-          widget.coinId,
+          widget.coinId.toUpperCase(),
           style: TextStyle(color: Colors.white),
         ), // Display coin ID as title
         leading: IconButton(
@@ -52,7 +63,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
               ),
             ),
             // Statistics section
-            FutureBuilder<List<OHLCInfo>?>(
+            FutureBuilder<List<OHLCInfo>>(
               future: ohlcDataFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -73,16 +84,16 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                         // Displaying OHLC statistics
                         StatisticsRow(
                             title: 'Open',
-                            value: latestData.open.toStringAsFixed(2)),
+                            value: '\$${latestData.open.toStringAsFixed(2)}'),
                         StatisticsRow(
                             title: 'High',
-                            value: latestData.high.toStringAsFixed(2)),
+                            value: '\$${latestData.high.toStringAsFixed(2)}'),
                         StatisticsRow(
                             title: 'Low',
-                            value: latestData.low.toStringAsFixed(2)),
+                            value: '\$${latestData.low.toStringAsFixed(2)}'),
                         StatisticsRow(
                             title: 'Close',
-                            value: latestData.close.toStringAsFixed(2)),
+                            value: '\$${latestData.close.toStringAsFixed(2)}'),
                         // Placeholder for other statistics
                         StatisticsRow(title: 'Volume', value: '---'),
                         StatisticsRow(title: 'Market Cap', value: '---'),
