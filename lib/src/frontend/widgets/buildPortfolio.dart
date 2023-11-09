@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/common/helpers/string.dart';
 
-Widget buildPortfolio(BuildContext context) {
+Widget buildPortfolio(BuildContext context, String portfolioValue) {
   return Center(
     child: Container(
       height: 100,
@@ -27,10 +25,9 @@ Widget buildPortfolio(BuildContext context) {
           SizedBox(height: 8.0),
           RichText(
             text: TextSpan(
-              style: DefaultTextStyle.of(context).style,
-              children: <InlineSpan>[
+              children: <TextSpan>[
                 TextSpan(
-                  text: '\$1,732.00 ',
+                  text: portfolioValue + ' ', // Dynamic portfolio value
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24.0,

@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
-import 'package:suiinvest/src/frontend/common/helpers/string.dart';
-import 'buildGreenChart.dart';
 
 class EcosystemItem extends StatelessWidget {
   final String label;
@@ -68,13 +66,12 @@ class EcosystemItem extends StatelessWidget {
   }
 }
 
-Widget buildHealth(BuildContext context) {
+Widget buildHealth(BuildContext context, Map<String, dynamic> healthData) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 16.0), // Consistent padding with other elements
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Text(
           'Ecosystem Health',
           style: TextStyle(
@@ -84,25 +81,27 @@ Widget buildHealth(BuildContext context) {
       SizedBox(height: 16.0),
       EcosystemItem(
         label: 'Market Cap',
-        value: '\$356,104,841',
-        // chart: buildGreenChart(),
+        value:
+            healthData['Market Cap'] ?? 'N/A', // Use data from healthData map
+        // chart: buildGreenChart(), // Commented out, assuming this is built elsewhere or not included
       ),
       EcosystemItem(
-        label: 'Price', value: '\$0.418026',
-        change:
-            '-12.4%', // Optional: only add this if you want to show the change
+        label: 'Price',
+        value: healthData['Price'] ?? 'N/A',
+        change: healthData['Price Change'] ??
+            'N/A', // Adjust key as per your API response
       ),
       EcosystemItem(
         label: '24hr Trading Vol',
-        value: '\$29,026,989',
+        value: healthData['24hr Trading Vol'] ?? 'N/A',
       ),
       EcosystemItem(
         label: 'Fully Diluted Valuation',
-        value: '\$4,138,862,797',
+        value: healthData['Fully Diluted Valuation'] ?? 'N/A',
       ),
       EcosystemItem(
         label: 'Circulating Supply',
-        value: '\$860,392,9597',
+        value: healthData['Circulating Supply'] ?? 'N/A',
       ),
     ],
   );
