@@ -21,13 +21,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<String> userBalance;
+  late Future<String> userPortfolio;
   late Future<Map<String, dynamic>> ecosystemHealth;
 
   @override
   void initState() {
     super.initState();
-    userBalance = fetchUserPortfolio(widget.userAccount.getAddress()); // Fetch user balance on init
+    userPortfolio = fetchUserPortfolio(widget.userAccount.getAddress()); // Fetch user balance on init
     ecosystemHealth = fetchEcosystemHealth(); // Fetch ecosystem health on init
   }
 
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                   Welcome(context, widget.userAccount),
                   SizedBox(height: 30.0),
                   FutureBuilder<String>(
-                    future: fetchUserPortfolio(widget.userAccount.getAddress()),
+                    future: userPortfolio,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
@@ -103,17 +103,28 @@ Future<String> fetchUserPortfolio(address) async {
   print (coinPrices[0].id);
 
   double userPortfolioValue = 0;
-
   for (var i = 0; i < userCoinData.length; i++) {
     final coinData = userCoinData[i];
-    final coinObj = COINS.firstWhere((element) => element.truncatedAddress == coinData.coinType);
-    final coinPrice = coinPrices.firstWhere((element) => element.id == coinObj.coinGeckoId);
-    if (coinPrice.currentPrice != null) 
-      userPortfolioValue += ((coinData.totalBalance.toInt() / pow(10, coinObj.decimals)).toDouble() * (coinPrice.currentPrice ?? 0));
+      print ("here1");
+    print (COINS[0].truncatedAddress);
+    print (coinData.coinType);
+    final coinObj = COINS.where((element) => element.truncatedAddress == coinData.coinType);
+    if (coinObj.isEmpty)
+      continue;
+
+    final coinPrice = coinPrices.where((element) => element.id == coinObj.first.coinGeckoId);
+      print ("here3");
+
+    if (coinPrice.isEmpty)
+      continue;
+
+    userPortfolioValue += ((coinData.totalBalance.toInt() / pow(10, coinObj.first.decimals)).toDouble() * (coinPrice.first.currentPrice ?? 0));
+    print (userPortfolioValue);
   }
+  print (userPortfolioValue);
 
   // Assume this returns a string representation of the user balance
-  return '\$${userPortfolioValue.toStringAsFixed(6)}}';
+  return '\$${userPortfolioValue.toStringAsFixed(2)}';
 }
 
 Future<Map<String, dynamic>> fetchEcosystemHealth() async {
