@@ -34,19 +34,3 @@ Future<List<MarketChartData>?> fetchCoinHistory(
   }
   return null;
 }
-
-Future<List<OHLCInfo>?> fetchCoinOHLC(
-    String coinId, String currency, int priorDays) async {
-  final api = CoinGeckoApi();
-  final result = await api.coins.getCoinOHLC(
-    id: coinId,
-    vsCurrency: currency,
-    days: priorDays,
-  );
-  if (!result.isError) {
-    return result.data;
-  } else {
-    print('${result.errorCode}: ${result.errorMessage}');
-  }
-  return null;
-}
