@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sui/sui.dart';
-// import 'package:suiinvest/src/frontend/common/helpers/string.dart';
 import 'widgets/ecosystem_item.dart';
 import 'widgets/welcome.dart';
 import 'widgets/buildPortfolio.dart';
+import 'package:suiinvest/src/services/sui.dart';
+import 'package:suiinvest/src/services/coingecko.dart';
+import 'package:suiinvest/src/common/constants/coins.dart';
+
 
 class HomePage extends StatefulWidget {
   final SuiAccount userAccount;
@@ -24,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    userBalance = fetchUserBalance(); // Fetch user balance on init
+    userBalance = fetchUserPortfolio(widget.userAccount.getAddress()); // Fetch user balance on init
     ecosystemHealth = fetchEcosystemHealth(); // Fetch ecosystem health on init
   }
 
@@ -43,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                   Welcome(context, widget.userAccount),
                   SizedBox(height: 30.0),
                   FutureBuilder<String>(
-                    future: userBalance,
+                    future: fetchUserPortfolio(widget.userAccount.getAddress()),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
@@ -81,11 +84,36 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Future<String> fetchUserBalance() async {
+Future<String> fetchUserPortfolio(address) async {
   // make the async function call here
-  await Future.delayed(Duration(seconds: 2));
+  final userCoinData = await fetchCoinData(address);
+  if (userCoinData == null) {
+    return 'Failed to fetch user balance';
+  }
+  print(userCoinData[0]);
+  final coinIds = COINS.where((coin) => userCoinData
+    .any((element) => element.coinType == coin.truncatedAddress))
+    .map((coin) => coin.coinGeckoId);
+  
+  final coinPrices = await fetchCoinPrices(coinIds.toList(), 'usd');
+  if (coinPrices == null) {
+    print ("COINGECKO ERROR");
+    return '\$-';
+  }
+  print (coinPrices[0].id);
+
+  double userPortfolioValue = 0;
+
+  for (var i = 0; i < userCoinData.length; i++) {
+    final coinData = userCoinData[i];
+    final coinObj = COINS.firstWhere((element) => element.truncatedAddress == coinData.coinType);
+    final coinPrice = coinPrices.firstWhere((element) => element.id == coinObj.coinGeckoId);
+    if (coinPrice.currentPrice != null) 
+      userPortfolioValue += ((coinData.totalBalance.toInt() / pow(10, coinObj.decimals)).toDouble() * (coinPrice.currentPrice ?? 0));
+  }
+
   // Assume this returns a string representation of the user balance
-  return '\$1,800.00';
+  return '\$${userPortfolioValue.toStringAsFixed(6)}}';
 }
 
 Future<Map<String, dynamic>> fetchEcosystemHealth() async {
