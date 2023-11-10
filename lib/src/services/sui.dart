@@ -65,16 +65,16 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
   return output;
 }
 
-Future<List<String>> getCoinObjectIds(String address, Coins.Coin coin) async {
-  final objects = await client.getOwnedObjects(address);
-  print(objects);
+Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
+  final objects = await client.getCoins(address);
   final coinIds = objects
     .data
-    .where((x) => Coin.isCoin(x))
-    .map((y) => y.data!.objectId);
+    .where((c) => c.coinType == coin.truncatedAddress)
+    .map((y) => y.coinObjectId);
 
+  print("CoinIDs");
   print(coinIds);
-  return [];
+  return coinIds.toList();
 }
 
 Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool a2b, int amount) async {
@@ -89,7 +89,8 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
 
   // Get coin vector (if a2b we need coin1, otherwise coin2)
   var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), a2b ? coin1 : coin2);
-  var coinsAVec = tx.makeMoveVec(objects: coinObjectIds);
+  //var coinsAVec = tx.makeMoveVec(objects: coinObjectIds.map((x) => tx.object(x)));
+  var coinsAVec = tx.makeMoveVec(objects: [tx.object("0xb3de0045c08e6604414f38e98094570c168ca5e58c2e8aa44013ccbc76bc464c")]);
 
   tx.moveCall("$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${a2b?'a2b':'b2a'}", arguments: [
     tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
@@ -99,14 +100,17 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
     tx.pureInt(amount),                   // amount: u64,
     tx.pureInt(amount * 1000),            // amount_limit: u64,
     tx.pureInt(SQRT_PRICE_LIMIT),         // sqrt_price_limit: u128,
-    tx.object(SUI_CLOCK)                  // clock: &Clock
+    tx.object(SUI_CLOCK),                 // clock: &Clock*/
   ]);
 
   final result = await client.signAndExecuteTransactionBlock(userAccount, tx);
+  print(result.digest);
   return result.digest;
 }
 
 Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool buying, double amountIn) async{
+  print("here");
+  
   List<String> digests = [];
   String digest1;
 

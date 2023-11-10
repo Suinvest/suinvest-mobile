@@ -105,15 +105,11 @@ Future<String> fetchUserPortfolio(address) async {
   double userPortfolioValue = 0;
   for (var i = 0; i < userCoinData.length; i++) {
     final coinData = userCoinData[i];
-      print ("here1");
-    print (COINS[0].truncatedAddress);
-    print (coinData.coinType);
     final coinObj = COINS.where((element) => element.truncatedAddress == coinData.coinType);
     if (coinObj.isEmpty)
       continue;
 
     final coinPrice = coinPrices.where((element) => element.id == coinObj.first.coinGeckoId);
-      print ("here3");
 
     if (coinPrice.isEmpty)
       continue;

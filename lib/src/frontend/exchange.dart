@@ -1,7 +1,11 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sui/sui_account.dart';
 import 'package:suiinvest/src/common/constants/colors.dart';
 import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
+import 'package:suiinvest/src/services/authentication.dart';
+import 'package:suiinvest/src/services/sui.dart';
+import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
@@ -155,7 +159,9 @@ class _ExchangePageState extends State<ExchangePage> {
           ),
         ),
       ),
-      onPressed: _handleSwap,
+      onPressed: () => {
+        routeSwaps(widget.userAccount, Coins.USDC, true, 0.2)
+      },
       child: const Text(
         'SWAP',
         style: TextStyle(color: Colors.white, fontSize: 15),
