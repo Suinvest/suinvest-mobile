@@ -5,6 +5,8 @@ import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/routing.dart';
 import 'package:suiinvest/src/frontend/account.dart';
 import 'package:suiinvest/src/services/authentication.dart';
+import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
+
 
 import 'services/sui.dart';
 
@@ -22,6 +24,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<SuiAccount?> fetchUserAccountObject() async {
     final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
+    getCoinObjectIds("0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331", Coins.SUI);
     if (userAccount == null) {
       print('Failed to fetch userAccount');
     } 

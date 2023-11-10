@@ -66,12 +66,11 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
 }
 
 Future<List<String>> getCoinObjectIds(String address, Coins.Coin coin) async {
-  final objects = await client.getOwnedObjects(address);
-  print(objects);
+  final objects = await client.getAllCoins(address);
   final coinIds = objects
     .data
-    .where((x) => Coin.isCoin(x))
-    .map((y) => y.data!.objectId);
+    .where((x) => x.coinType == "0x2::sui::SUI")
+    .map((y) => y.coinObjectId);
 
   print(coinIds);
   return [];
