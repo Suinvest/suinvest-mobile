@@ -5,7 +5,7 @@ import 'package:suiinvest/src/frontend/exchange.dart';
 import 'package:suiinvest/src/frontend/home.dart';
 
 class AppRouter extends StatefulWidget {
-  final SuiAccount userAccount;
+  final SuiAccount? userAccount;
 
   AppRouter({required this.userAccount});
 
@@ -17,9 +17,16 @@ class _AppRouterState extends State<AppRouter> {
   int _selectedIndex = 0; // Start with the first index by default
   late final PageController _pageController;
 
+  SuiAccount? userAccount; // This is the variable we'll reference as the propagated userAccount object
+
   @override
   void initState() {
     super.initState();
+    userAccount = widget.userAccount; // Initialize userAccount in initState
+    if (userAccount == null) {
+      // MAKE THIS SET THE INDEX TO THE SIGN IN PAGE
+        // sign in page then will jump to home once the userAccount object is properly fetched
+    }
     _pageController = PageController(initialPage: _selectedIndex);
   }
 
@@ -53,9 +60,9 @@ class _AppRouterState extends State<AppRouter> {
           },
           children: [
             //TODO: include more pages here
-            HomePage(userAccount: widget.userAccount, userBalances: []),
+            HomePage(userAccount: widget.userAccount!, userBalances: []),
             CoinPage(),
-            ExchangePage(userAccount: widget.userAccount),
+            ExchangePage(userAccount: widget.userAccount!),
           ],
           physics: NeverScrollableScrollPhysics(), // Disable page swiping
         ),

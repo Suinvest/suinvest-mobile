@@ -1,11 +1,16 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:coingecko_api/data/enumerations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:suiinvest/src/frontend/price_history.dart';
+
+import 'package:suiinvest/src/common/constants/coins.dart';
+import 'package:suiinvest/src/frontend/widgets/cryptoListItem.dart';
+import 'package:suiinvest/src/services/coingecko.dart';
 
 class CryptoListItem extends StatelessWidget {
   final int rank;
@@ -99,25 +104,20 @@ class CryptoListItem extends StatelessWidget {
   }
 }
 
+
 Future<List<CryptoListItem>> fetchCoins() async {
-  final response = await http.get(Uri.parse(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false'));
-  if (response.statusCode == 200) {
-    List<dynamic> coinsJson = json.decode(response.body);
-    return coinsJson.map((json) {
-      final change = json['price_change_percentage_24h'] ?? 0.0;
+  final coinMarketData = await fetchCoinPrices(COINS.map((coin) => coin.coinGeckoId).toList(), "usd");
+  if (coinMarketData != null) {
+    return coinMarketData.map((coin) {
       return CryptoListItem(
-        rank: json['market_cap_rank'],
-        name: json['name'],
-        symbol: json['symbol'].toUpperCase(),
-        price: '\$${json['current_price']}',
-        change: '${change.toStringAsFixed(2)}%',
-        iconUrl: json['image'],
+        rank: coin.marketCapRank ?? 0,
+        name: coin.name,
+        symbol: coin.symbol,
+        price: coin.currentPrice?.toStringAsFixed(2) ?? "0.00",
+        change: "${coin.priceChangePercentage24h?.toStringAsFixed(2) ?? "-"}%",
+        iconUrl: coin.image ?? "",
       );
     }).toList();
-  } else if (response.statusCode == 429) {
-    print("Coingecko rate limited");
-    throw Exception('Coingecko rate limited');
   } else {
     throw Exception('Failed to load coins');
   }
