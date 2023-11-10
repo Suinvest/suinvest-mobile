@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:suiinvest/src/services/defillama.dart';
+
 class CryptoListItem extends StatelessWidget {
   final int rank;
   final String name;
