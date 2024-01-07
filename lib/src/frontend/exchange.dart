@@ -53,7 +53,7 @@ class _ExchangePageState extends State<ExchangePage> {
           const SizedBox(height: 10),
           _buildNumPad(),
           const SizedBox(height: 30),
-          _buildSwapButton(),
+          _buildSwapButton(swapTo, swapFrom == COINS[0]), // last arg tells us if SUI is the source token
         ],
       ),
     );
@@ -147,7 +147,7 @@ class _ExchangePageState extends State<ExchangePage> {
     }
   }
 
-  Widget _buildSwapButton() {
+  Widget _buildSwapButton(Coin selectedCoin, bool isSUISwapIn) {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(AppColors.buttonBlue),
@@ -158,7 +158,7 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
       onPressed: () => {
-        routeSwaps(widget.userAccount, USDC, true, 0.2)
+        routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn, _myController.text != "" ? double.parse(_myController.text) : 0) // last value is the amount to swap
       },
       child: const Text(
         'SWAP',

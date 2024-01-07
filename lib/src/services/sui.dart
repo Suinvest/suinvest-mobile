@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:sui/sui.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:suiinvest/src/common/constants/addresses.dart';
 import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
@@ -108,13 +107,15 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   return result.digest;
 }
 
-Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool buying, double amountIn) async{
+Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool isSUISwapIn, double amountIn) async{
   print("here");
-  
+  print (coin.symbol);
+  print (amountIn);
+  print (isSUISwapIn);
   List<String> digests = [];
   String digest1;
 
-  if (buying) {
+  if (isSUISwapIn) {
     // SUI to requested coin, b2a (XXX-SUI pool)
     int trueAmount = (amountIn * pow(10, Coins.SUI.decimals)).toInt();
     digest1 = await swap(userAccount, coin, Coins.SUI, false, trueAmount);
