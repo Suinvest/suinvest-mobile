@@ -173,8 +173,8 @@ final SSWP = Coin(
 
 final List<Coin> COINS = [
   SUI,
-  CETUS,
   USDC,
+  CETUS,
   USDT,
   WETH,
   SUIA,

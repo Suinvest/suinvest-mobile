@@ -1,11 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sui/sui_account.dart';
 import 'package:suiinvest/src/common/constants/colors.dart';
 import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
-import 'package:suiinvest/src/services/authentication.dart';
 import 'package:suiinvest/src/services/sui.dart';
-import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
+import 'package:suiinvest/src/common/constants/coins.dart';
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
@@ -18,8 +16,8 @@ class ExchangePage extends StatefulWidget {
 
 class _ExchangePageState extends State<ExchangePage> {
   final TextEditingController _myController = TextEditingController();
-  String swapFrom = 'ETH';
-  String swapTo = 'ETH';
+  Coin swapFrom = COINS[0];
+  Coin swapTo = COINS[1];
 
   @override
   Widget build(BuildContext context) {
@@ -66,16 +64,16 @@ class _ExchangePageState extends State<ExchangePage> {
   }
 
   Widget _buildDropdownButton(
-      String label, String value, ValueChanged<String?> onChanged) {
-    return DropdownButton<String>(
+      String label, Coin value, ValueChanged<Coin?> onChanged) {
+    return DropdownButton<Coin>(
       dropdownColor: AppColors.backgroundGrey,
       style: const TextStyle(
           color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
       value: value,
-      items: <String>['ETH', 'BTC', 'LTC'].map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
+      items: COINS.map((Coin coin) {
+        return DropdownMenuItem<Coin>(
+          value: coin,
+          child: Text(coin.symbol),
         );
       }).toList(),
       onChanged: onChanged,
@@ -107,7 +105,7 @@ class _ExchangePageState extends State<ExchangePage> {
             ),
           ),
         ),
-        Icon(
+        const Icon(
           Icons.arrow_downward,
           color: AppColors.buttonBlue,
         ),
@@ -160,7 +158,7 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
       onPressed: () => {
-        routeSwaps(widget.userAccount, Coins.USDC, true, 0.2)
+        routeSwaps(widget.userAccount, USDC, true, 0.2)
       },
       child: const Text(
         'SWAP',
