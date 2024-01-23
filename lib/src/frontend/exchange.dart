@@ -53,7 +53,7 @@ class _ExchangePageState extends State<ExchangePage> {
           const SizedBox(height: 10),
           _buildNumPad(),
           const SizedBox(height: 30),
-          _buildSwapButton(swapTo, swapFrom == COINS[0]), // last arg tells us if SUI is the source token
+          _buildSwapButton(swapFrom == COINS[0] ? swapTo : swapFrom, swapFrom == COINS[0]), // last arg tells us if SUI is the source token
         ],
       ),
     );

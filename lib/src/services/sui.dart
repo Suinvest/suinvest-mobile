@@ -67,7 +67,14 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
 }
 
 Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
-  final objects = await client.getCoins(address);
+  print (address);
+  final objects = await client.getAllCoins(address);
+  print (coin.address);
+  print (objects.data.length);
+  print (objects.data[0].coinObjectId);
+  for (var i = 0; i < objects.data.length; i++) {
+    print (objects.data[i]);
+  }
   final coinIds = objects
     .data
     .where((c) => c.coinType == coin.truncatedAddress)
@@ -90,37 +97,42 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   print ("isSUISwapIn");
   var coinsAVec;
   if (isSUISwapIn) { // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
-    final amountToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
-    print (amountToSwap);
-    var coinsAVec = tx.makeMoveVec(objects: [tx.object(amountToSwap)]);
-
+    // final amountToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
+    // print (amountToSwap);
+    // print ('amountToSwap');
+    // var coinsAVec = tx.makeMoveVec(objects: [amountToSwap]);
+    // print (coinsAVec);
+    // print ('coinsAVec');
+    coinsAVec = tx.makeMoveVec(objects: ["0x2aff8b23f8533c8d37034e7d4ddbbf5b97151f5429aab59772a75be35e8070c3"]);
     tx.setSenderIfNotSet(userAccount.getAddress());
   } else { // TODO: clean up logic here
     // Get coin vector (if a2b we need coin1, otherwise coin2) (this is a list of strings)
     var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), coin1);
-    // TODO: see if better setup here
     coinsAVec = tx.makeMoveVec(objects: coinObjectIds.map((x) => tx.object(x)));
-    // var coinsAVec = tx.makeMoveVec(objects: [tx.object("0xb3de0045c08e6604414f38e98094570c168ca5e58c2e8aa44013ccbc76bc464c")]);
+    // coinsAVec = tx.makeMoveVec(objects: [tx.object("0xe83aac1a52c1f2b2df9f88c8a64d2952216ac6314875a055ecc30f466d077886")]);
     print (coinsAVec);
     print ("coinsAVec");
     tx.setSenderIfNotSet(userAccount.getAddress());
   }
 
   tx.setGasBudget(BigInt.from(20000000)); // TODO: don't hardcode
-  print ("pool[swap_account]");
-  print (pool["swap_account"]);
+  // print ("pool[swap_account]");
+  // print (pool["swap_account"]);
+  // print ([coin1.address, coin2.address]);
+  // print ('[coin1.address, coin2.address]');
+  
   tx.moveCall(
     "$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${isSUISwapIn ? 'b2a' : 'a2b'}",
-    // typeArguments: [coin1.address, coin2.address],
+    typeArguments: [coin1.address, coin2.address],
     arguments: [
-    tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
-    tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
-    coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
-    tx.pureBool(true),                    // by_amount_in: bool,
-    tx.pureInt(amount),                   // amount: u64,
-    tx.pureInt(amount * 1000),            // amount_limit: u64, TODO: clean up the 1000x here
-    tx.pureInt(SQRT_PRICE_LIMIT),         // sqrt_price_limit: u128,
-    tx.object(SUI_CLOCK),                 // clock: &Clock*/
+      tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
+      tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
+      coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
+      tx.pureBool(true),                    // by_amount_in: bool,
+      tx.pure("11"),                   // amount: u64,
+      tx.pureInt(amount * 1000),            // amount_limit: u64, TODO: clean up the 1000x here
+      tx.pure("4295048016"),         // sqrt_price_limit: u128,
+      tx.object(SUI_CLOCK),                 // clock: &Clock*/
   ]);
   print ("ALL GOOD");
   final result = await client.signAndExecuteTransactionBlock(userAccount, tx);
