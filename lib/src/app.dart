@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<SuiAccount?> fetchUserAccountObject() async {
     final userAccount = await fetchUserAccount(); // Initialize userAccount in initState
+    getCoinObjectIds("0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331", Coins.SUI);
     if (userAccount == null) {
       print('Failed to fetch userAccount');
     } 

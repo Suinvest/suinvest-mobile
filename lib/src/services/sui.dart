@@ -70,6 +70,7 @@ Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
   final coinIds = objects
     .data
     .where((c) => c.coinType == coin.truncatedAddress)
+
     .map((y) => y.coinObjectId);
 
   print("CoinIDs");
