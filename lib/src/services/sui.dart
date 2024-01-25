@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:sui/sui.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:suiinvest/src/common/constants/addresses.dart';
 import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
@@ -38,10 +37,12 @@ Future<dynamic> getPool(Coins.Coin coin1, Coins.Coin coin2) async {
   }
   var cetusResponseBody = await json.decode(cetusResponse.body);
   var pools = cetusResponseBody["data"]["pools"];
+  print("pools");
+  print(pools);
   dynamic desiredPool;
   double maxTVL = 0.0;
   pools.forEach((pool) {
-    if (pool["token_a_address"] == coin1.address && pool["token_b_address"] == coin2.address) {
+    if (pool["token_a_address"] == coin1.address && pool["token_b_address"] == coin2.address) { // TODO: change to mainnet
       double TVL = double.parse(pool["tvl_in_usd"]);
       if (TVL > maxTVL) {
         desiredPool = pool;
@@ -66,7 +67,14 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
 }
 
 Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
-  final objects = await client.getCoins(address);
+  print (address);
+  final objects = await client.getAllCoins(address);
+  print (coin.address);
+  print (objects.data.length);
+  print (objects.data[0].coinObjectId);
+  for (var i = 0; i < objects.data.length; i++) {
+    print (objects.data[i]);
+  }
   final coinIds = objects
     .data
     .where((c) => c.coinType == coin.truncatedAddress)
@@ -78,7 +86,7 @@ Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
   return coinIds.toList();
 }
 
-Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool a2b, int amount) async {
+Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool isSUISwapIn, int amount) async {
   if (userAccount == null) {
     throw Exception('Failed to fetch userAccount');
   }
@@ -86,44 +94,71 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   dynamic pool = await getPool(coin1, coin2);
   
   final tx = TransactionBlock();
-  tx.setGasBudget(BigInt.from(20000000));
+  print (isSUISwapIn);
+  print ("isSUISwapIn");
+  var coinsAVec;
+  if (isSUISwapIn) { // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
+    // final amountToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
+    // print (amountToSwap);
+    // print ('amountToSwap');
+    // var coinsAVec = tx.makeMoveVec(objects: [amountToSwap]);
+    // print (coinsAVec);
+    // print ('coinsAVec');
+    coinsAVec = tx.makeMoveVec(objects: ["0x2aff8b23f8533c8d37034e7d4ddbbf5b97151f5429aab59772a75be35e8070c3"]);
+    tx.setSenderIfNotSet(userAccount.getAddress());
+  } else { // TODO: clean up logic here
+    // Get coin vector (if a2b we need coin1, otherwise coin2) (this is a list of strings)
+    var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), coin1);
+    coinsAVec = tx.makeMoveVec(objects: coinObjectIds.map((x) => tx.object(x)));
+    // coinsAVec = tx.makeMoveVec(objects: [tx.object("0xe83aac1a52c1f2b2df9f88c8a64d2952216ac6314875a055ecc30f466d077886")]);
+    print (coinsAVec);
+    print ("coinsAVec");
+    tx.setSenderIfNotSet(userAccount.getAddress());
+  }
 
-  // Get coin vector (if a2b we need coin1, otherwise coin2)
-  var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), a2b ? coin1 : coin2);
-  //var coinsAVec = tx.makeMoveVec(objects: coinObjectIds.map((x) => tx.object(x)));
-  var coinsAVec = tx.makeMoveVec(objects: [tx.object("0xb3de0045c08e6604414f38e98094570c168ca5e58c2e8aa44013ccbc76bc464c")]);
-
-  tx.moveCall("$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${a2b?'a2b':'b2a'}", arguments: [
-    tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
-    tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
-    coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
-    tx.pureBool(true),                    // by_amount_in: bool,
-    tx.pureInt(amount),                   // amount: u64,
-    tx.pureInt(amount * 1000),            // amount_limit: u64,
-    tx.pureInt(SQRT_PRICE_LIMIT),         // sqrt_price_limit: u128,
-    tx.object(SUI_CLOCK),                 // clock: &Clock*/
+  tx.setGasBudget(BigInt.from(20000000)); // TODO: don't hardcode
+  // print ("pool[swap_account]");
+  // print (pool["swap_account"]);
+  // print ([coin1.address, coin2.address]);
+  // print ('[coin1.address, coin2.address]');
+  
+  tx.moveCall(
+    "$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${isSUISwapIn ? 'b2a' : 'a2b'}",
+    typeArguments: [coin1.address, coin2.address],
+    arguments: [
+      tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
+      tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
+      coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
+      tx.pureBool(true),                    // by_amount_in: bool,
+      tx.pure("11"),                   // amount: u64,
+      tx.pureInt(amount * 1000),            // amount_limit: u64, TODO: clean up the 1000x here
+      tx.pure("4295048016"),         // sqrt_price_limit: u128,
+      tx.object(SUI_CLOCK),                 // clock: &Clock*/
   ]);
-
+  print ("ALL GOOD");
   final result = await client.signAndExecuteTransactionBlock(userAccount, tx);
+  print("RESTUL");
   print(result.digest);
   return result.digest;
 }
 
-Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool buying, double amountIn) async{
+Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool isSUISwapIn, double amountIn) async{
   print("here");
-  
+  print (coin.symbol);
+  print (amountIn);
+  print (isSUISwapIn);
   List<String> digests = [];
   String digest1;
 
-  if (buying) {
+  if (isSUISwapIn) {
     // SUI to requested coin, b2a (XXX-SUI pool)
     int trueAmount = (amountIn * pow(10, Coins.SUI.decimals)).toInt();
-    digest1 = await swap(userAccount, coin, Coins.SUI, false, trueAmount);
+    digest1 = await swap(userAccount, coin, Coins.SUI, true, trueAmount);
     digests.add(digest1);
   } else {
     // Requested coin to SUI, a2b (XXX-SUI pool)
     int trueAmount = (amountIn * pow(10, coin.decimals)).toInt();
-    digest1 = await swap(userAccount, coin, Coins.SUI, true, trueAmount);
+    digest1 = await swap(userAccount, coin, Coins.SUI, false, trueAmount);
     digests.add(digest1);
   }
   
