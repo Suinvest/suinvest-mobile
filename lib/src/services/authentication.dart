@@ -47,7 +47,7 @@ Future<String> retrieveSecret(key) async {
             descriptionLabel: 'Please authenticate'),
         iOsPrompt: IOsPrompt(touchIdText: 'Authenticate')));
 
-    print('Secret retrieved, secret: $retrieved');
+    // print('Secret retrieved, secret: $retrieved');
     return retrieved;
   } on Exception catch (exception) {
     print(exception);
