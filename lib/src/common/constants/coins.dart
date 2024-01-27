@@ -1,3 +1,5 @@
+import 'package:suiinvest/src/common/constants/addresses.dart';
+
 class Coin {
   String address;
   String truncatedAddress;
@@ -6,7 +8,6 @@ class Coin {
   String icon;
   String coinGeckoId;
   int decimals;
-  String testnet;
 
   Coin({
     required this.address,
@@ -16,7 +17,6 @@ class Coin {
     required this.icon,
     required this.coinGeckoId,
     required this.decimals,
-    this.testnet = ""
   });
 }
 
@@ -28,29 +28,26 @@ final SUI = Coin(
   decimals: 9,
   icon: "https://assets.coingecko.com/coins/images/26375/standard/sui_asset.jpeg",
   coinGeckoId: "sui",
-  testnet: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
 );
 
 final CETUS = Coin(
-  address: "0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS",
+  address: testnet ? "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::cetus::CETUS" : "0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS",
   truncatedAddress: "0x6864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS",
   symbol: "CETUS",
   name: "Cetus Token",
   decimals: 9,
   icon: "https://assets.coingecko.com/coins/images/30256/standard/cetus.png",
   coinGeckoId: "cetus-protocol",
-  testnet: "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::cetus::CETUS"
 );
 
 final USDC = Coin(
-  address: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
+  address: testnet ? "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::usdc::USDC" : "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
   truncatedAddress: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
   symbol: "USDC",
   name: "USD Coin",
   decimals: 6,
   icon: "https://assets.coingecko.com/coins/images/6319/standard/usdc.png",
   coinGeckoId: "usdc",
-  testnet: "0x26b3bc67befc214058ca78ea9a2690298d731a2d4309485ec3d40198063c4abc::usdc::USDC"
 );
 
 final USDT = Coin(
@@ -173,8 +170,8 @@ final SSWP = Coin(
 
 final List<Coin> COINS = [
   SUI,
-  CETUS,
   USDC,
+  CETUS,
   USDT,
   WETH,
   SUIA,
