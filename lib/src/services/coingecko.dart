@@ -1,8 +1,6 @@
 import 'package:coingecko_api/coingecko_api.dart';
 import 'package:coingecko_api/data/market.dart';
 import 'package:coingecko_api/data/market_chart_data.dart';
-import 'package:coingecko_api/data/ohlc_info.dart';
-import 'package:flutter/material.dart';
 
 Future<List<Market>?> fetchCoinPrices(
     List<String> coinIds, String currency) async {

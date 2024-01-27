@@ -5,9 +5,9 @@ Widget buildPortfolio(BuildContext context, String portfolioValue) {
     child: Container(
       height: 100,
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Color.fromRGBO(50, 99, 234, 1),
+        color: const Color.fromRGBO(50, 99, 234, 1),
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Column(
@@ -22,13 +22,13 @@ Widget buildPortfolio(BuildContext context, String portfolioValue) {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           RichText(
             text: TextSpan(
               children: <TextSpan>[
                 TextSpan(
-                  text: portfolioValue + ' ', // Dynamic portfolio value
-                  style: TextStyle(
+                  text: '$portfolioValue ', // Dynamic portfolio value
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,

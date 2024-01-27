@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
   final SuiAccount userAccount;
   final List<CoinBalance> userBalances;
 
-  HomePage({required this.userAccount, required this.userBalances});
+  const HomePage({super.key, required this.userAccount, required this.userBalances});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -106,13 +106,15 @@ Future<String> fetchUserPortfolio(address) async {
   for (var i = 0; i < userCoinData.length; i++) {
     final coinData = userCoinData[i];
     final coinObj = COINS.where((element) => element.truncatedAddress == coinData.coinType);
-    if (coinObj.isEmpty)
+    if (coinObj.isEmpty) {
       continue;
+    }
 
     final coinPrice = coinPrices.where((element) => element.id == coinObj.first.coinGeckoId);
 
-    if (coinPrice.isEmpty)
+    if (coinPrice.isEmpty) {
       continue;
+    }
 
     userPortfolioValue += ((coinData.totalBalance.toInt() / pow(10, coinObj.first.decimals)).toDouble() * (coinPrice.first.currentPrice ?? 0));
     print (userPortfolioValue);

@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/routing.dart';
-import 'package:suiinvest/src/frontend/account.dart';
 import 'package:suiinvest/src/services/authentication.dart';
-import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
 
-import 'services/sui.dart';
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }

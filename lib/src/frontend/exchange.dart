@@ -1,16 +1,16 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sui/sui_account.dart';
 import 'package:suiinvest/src/common/constants/colors.dart';
 import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
-import 'package:suiinvest/src/services/authentication.dart';
 import 'package:suiinvest/src/services/sui.dart';
 import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
+  final Map<String, dynamic>? input;
 
-  const ExchangePage({Key? key, required this.userAccount}) : super(key: key);
+  const ExchangePage({Key? key, required this.userAccount, this.input})
+      : super(key: key);
 
   @override
   _ExchangePageState createState() => _ExchangePageState();
@@ -18,7 +18,8 @@ class ExchangePage extends StatefulWidget {
 
 class _ExchangePageState extends State<ExchangePage> {
   final TextEditingController _myController = TextEditingController();
-  String swapFrom = 'ETH';
+
+  String swapFrom = 'SUI';
   String swapTo = 'ETH';
 
   @override
@@ -72,7 +73,7 @@ class _ExchangePageState extends State<ExchangePage> {
       style: const TextStyle(
           color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
       value: value,
-      items: <String>['ETH', 'BTC', 'LTC'].map((String value) {
+      items: <String>['ETH', 'BTC', 'SUI'].map((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
@@ -107,7 +108,7 @@ class _ExchangePageState extends State<ExchangePage> {
             ),
           ),
         ),
-        Icon(
+        const Icon(
           Icons.arrow_downward,
           color: AppColors.buttonBlue,
         ),
@@ -159,9 +160,7 @@ class _ExchangePageState extends State<ExchangePage> {
           ),
         ),
       ),
-      onPressed: () => {
-        routeSwaps(widget.userAccount, Coins.USDC, true, 0.2)
-      },
+      onPressed: () => {routeSwaps(widget.userAccount, Coins.USDC, true, 0.2)},
       child: const Text(
         'SWAP',
         style: TextStyle(color: Colors.white, fontSize: 15),

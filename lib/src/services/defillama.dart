@@ -57,10 +57,10 @@ class SUIData {
 
 
 Future<SUIData?> fetchSUIData() async {
-  final dexVolsResponse = await http.get(Uri.parse('${defillamaBaseUrl}/overview/dexs/sui'));
+  final dexVolsResponse = await http.get(Uri.parse('$defillamaBaseUrl/overview/dexs/sui'));
   // final protocolsFeesResponse = await http.get(Uri.parse('${defillamaBaseUrl}/overview/fees/sui'));
 
-  final tvlHistoryResponse = await http.get(Uri.parse('${defillamaBaseUrl}/v2/historicalChainTvl/sui'));
+  final tvlHistoryResponse = await http.get(Uri.parse('$defillamaBaseUrl/v2/historicalChainTvl/sui'));
   if (tvlHistoryResponse.statusCode == 200 && dexVolsResponse.statusCode == 200) {
     final dexVolsJson = json.decode(dexVolsResponse.body);
     // final protocolsFeesJson = json.decode(protocolsFeesResponse.body);

@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  crypto_market:
+    dependency: "direct main"
+    description:
+      name: crypto_market
+      sha256: "99ba6b9aabaca4322089adb19d48abb0401332d77b2553b591143d10d9c68aa1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   dio:
     dependency: transitive
     description:
@@ -157,15 +165,23 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: "0c8baa9d4db70817d27099efb99e40e4164448bb86f73217216ef65b3976bc4f"
+      sha256: "48a1b69be9544e2b03d9a8e843affd89e43f3194c9248776222efcb4206bb1ec"
       url: "https://pub.dev"
     source: hosted
-    version: "0.36.4"
+    version: "0.62.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_chart:
+    dependency: "direct main"
+    description:
+      name: flutter_chart
+      sha256: "0779f7e5526a6d2cfb45838bff2cb7c4d72514c1986f020de982ebb3ced6f8b6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   flutter_config:
     dependency: "direct main"
     description:
@@ -216,6 +232,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  get:
+    dependency: transitive
+    description:
+      name: get
+      sha256: e4e7335ede17452b391ed3b2ede016545706c01a02292a6c97619705e7d2a85e
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.6"
   hex:
     dependency: transitive
     description:
@@ -228,10 +252,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
+      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "0.13.6"
   http_parser:
     dependency: transitive
     description:
@@ -264,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.1"
+  k_chart:
+    dependency: transitive
+    description:
+      name: k_chart
+      sha256: "621341e440c8a6ca4aa496b470b2f835c2c59eca3cac1146d4557012b60ef5ab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1"
   lints:
     dependency: transitive
     description:
@@ -304,14 +336,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.3"
-  pedantic:
-    dependency: transitive
-    description:
-      name: pedantic
-      sha256: "67fc27ed9639506c856c840ccce7594d0bdcd91bc8d53d6e52359449a1d50602"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.11.1"
   pointycastle:
     dependency: transitive
     description:
@@ -415,4 +439,4 @@ packages:
     version: "2.4.0"
 sdks:
   dart: ">=3.1.3 <4.0.0"
-  flutter: ">=2.0.0"
+  flutter: ">=3.13.0"

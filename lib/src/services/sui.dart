@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:sui/sui.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:suiinvest/src/common/constants/addresses.dart';
 import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
