@@ -9,12 +9,12 @@ import 'package:suiinvest/src/services/sui.dart';
 import 'package:suiinvest/src/services/coingecko.dart';
 import 'package:suiinvest/src/common/constants/coins.dart';
 
-
 class HomePage extends StatefulWidget {
   final SuiAccount userAccount;
   final List<CoinBalance> userBalances;
 
-  const HomePage({super.key, required this.userAccount, required this.userBalances});
+  const HomePage(
+      {super.key, required this.userAccount, required this.userBalances});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -27,7 +27,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    userPortfolio = fetchUserPortfolio(widget.userAccount.getAddress()); // Fetch user balance on init
+    userPortfolio = fetchUserPortfolio(
+        widget.userAccount.getAddress()); // Fetch user balance on init
     ecosystemHealth = fetchEcosystemHealth(); // Fetch ecosystem health on init
   }
 
@@ -49,7 +50,11 @@ class _HomePageState extends State<HomePage> {
                     future: userPortfolio,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return Center(
+                            child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.black),
+                        ));
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
@@ -63,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                     future: ecosystemHealth,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
@@ -91,35 +96,41 @@ Future<String> fetchUserPortfolio(address) async {
     return 'Failed to fetch user balance';
   }
   print(userCoinData[0]);
-  final coinIds = COINS.where((coin) => userCoinData
-    .any((element) => element.coinType == coin.truncatedAddress))
-    .map((coin) => coin.coinGeckoId);
-  
+  final coinIds = COINS
+      .where((coin) => userCoinData
+          .any((element) => element.coinType == coin.truncatedAddress))
+      .map((coin) => coin.coinGeckoId);
+
   final coinPrices = await fetchCoinPrices(coinIds.toList(), 'usd');
   if (coinPrices == null) {
-    print ("COINGECKO ERROR");
+    print("COINGECKO ERROR");
     return '\$-';
   }
-  print (coinPrices[0].id);
+  print(coinPrices[0].id);
 
   double userPortfolioValue = 0;
   for (var i = 0; i < userCoinData.length; i++) {
     final coinData = userCoinData[i];
-    final coinObj = COINS.where((element) => element.truncatedAddress == coinData.coinType);
+    final coinObj =
+        COINS.where((element) => element.truncatedAddress == coinData.coinType);
     if (coinObj.isEmpty) {
       continue;
     }
 
-    final coinPrice = coinPrices.where((element) => element.id == coinObj.first.coinGeckoId);
+    final coinPrice =
+        coinPrices.where((element) => element.id == coinObj.first.coinGeckoId);
 
     if (coinPrice.isEmpty) {
       continue;
     }
 
-    userPortfolioValue += ((coinData.totalBalance.toInt() / pow(10, coinObj.first.decimals)).toDouble() * (coinPrice.first.currentPrice ?? 0));
-    print (userPortfolioValue);
+    userPortfolioValue +=
+        ((coinData.totalBalance.toInt() / pow(10, coinObj.first.decimals))
+                .toDouble() *
+            (coinPrice.first.currentPrice ?? 0));
+    print(userPortfolioValue);
   }
-  print (userPortfolioValue);
+  print(userPortfolioValue);
 
   // Assume this returns a string representation of the user balance
   return '\$${userPortfolioValue.toStringAsFixed(2)}';

@@ -17,20 +17,22 @@ class ExchangePage extends StatefulWidget {
 
 Coin getCoinBySymbol(String symbol) {
   return COINS.firstWhere(
-    (coin) => coin.symbol == symbol,
+    (coin) => coin.coinGeckoId == symbol,
     orElse: () => COINS[0], // Default to the first coin if not found
   );
 }
 
 @override
 class _ExchangePageState extends State<ExchangePage> {
-  final TextEditingController _myController = TextEditingController();
+  final TextEditingController _myController = TextEditingController(text: '0');
   Coin swapFrom = COINS[0];
   Coin swapTo = COINS[1];
+  bool backArrowCheck = false;
 
   @override
   void initState() {
     super.initState();
+    _myController.addListener(_onNumberChanged);
 
     // Default values
     swapFrom = COINS.first;
@@ -39,14 +41,30 @@ class _ExchangePageState extends State<ExchangePage> {
     if (widget.input != null &&
         widget.input!['action'] == 'sell' &&
         widget.input!['coinId'] != null) {
+      backArrowCheck = true;
       swapFrom = getCoinBySymbol(widget.input!['coinId']);
 
       swapTo = COINS[0];
     } else if (widget.input != null &&
         widget.input!['action'] == 'buy' &&
         widget.input!['coinId'] != null) {
+      backArrowCheck = true;
       swapFrom = COINS[0];
       swapTo = getCoinBySymbol(widget.input!['coinId']);
+    }
+  }
+
+  void _onNumberChanged() {
+    String text = _myController.text;
+    // If the first character is '0' and the length of the text is greater than 1,
+    // this means that a new number has been entered. Replace the '0' with the new number.
+    if (text.startsWith('0') && text.length > 1) {
+      text = text.substring(1);
+      _myController.text = text;
+      // Set the cursor at the end of the new input
+      _myController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _myController.text.length),
+      );
     }
   }
 
@@ -54,10 +72,12 @@ class _ExchangePageState extends State<ExchangePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: backArrowCheck
+            ? IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text(
           'Exchange',
           style: TextStyle(
@@ -66,18 +86,10 @@ class _ExchangePageState extends State<ExchangePage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.black, // Or any color you want for the AppBar
+        backgroundColor: Colors.black,
       ),
       body: Column(
         children: [
-          // const Text(
-          //   'Exchange',
-          //   style: TextStyle(
-          //     fontSize: 24,
-          //     fontWeight: FontWeight.bold,
-          //     color: Colors.white,
-          //   ),
-          // ),
           const SizedBox(height: 10),
           Text(
             'Account ${_formattedAddress(widget.userAccount.getAddress())}',
@@ -86,7 +98,7 @@ class _ExchangePageState extends State<ExchangePage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
           _buildDropdownButton('From', swapFrom, (newValue) {
             setState(() => swapFrom = newValue!);
           }),
@@ -99,9 +111,7 @@ class _ExchangePageState extends State<ExchangePage> {
           _buildNumPad(),
           const SizedBox(height: 30),
           _buildSwapButton(
-              swapFrom == COINS[0] ? swapTo : swapFrom,
-              swapFrom ==
-                  COINS[0]), // last arg tells us if SUI is the source token
+              swapFrom == COINS[0] ? swapTo : swapFrom, swapFrom == COINS[0]),
         ],
       ),
     );
@@ -140,42 +150,41 @@ class _ExchangePageState extends State<ExchangePage> {
   }
 
   Widget _buildArrowDivider() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 10.0, right: 5.0),
-            child: const Divider(
-              color: Colors.white,
-              height: 1.5,
-              thickness: 1,
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(
+                    left: 10.0, right: 5.0, top: 0, bottom: 0),
+                child: const Divider(
+                  color: Colors.white,
+                  height: 20,
+                  thickness: 1,
+                ),
+              ),
             ),
-          ),
-        ),
-        GestureDetector(
-          onTap: _swapCoins, // Method to swap coins when the icon is tapped
-          child: const Icon(
-            Icons.swap_vert,
-            color: AppColors.buttonBlue,
-          ),
-        ),
-        const Icon(
-          Icons.arrow_downward,
-          color: AppColors.buttonBlue,
-        ),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 5.0, right: 10.0),
-            child: const Divider(
-              color: Colors.white,
-              height: 1.5,
-              thickness: 1,
+            GestureDetector(
+              onTap: _swapCoins, // Method to swap coins when the icon is tapped
+              child: const Icon(
+                Icons.swap_vert,
+                color: AppColors.buttonBlue,
+              ),
             ),
-          ),
-        ),
-      ],
-    );
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 5.0, right: 10.0),
+                child: const Divider(
+                  color: Colors.white,
+                  height: 20,
+                  thickness: 1,
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   void _swapCoins() {
@@ -221,13 +230,8 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
       onPressed: () => {
-        routeSwaps(
-            widget.userAccount,
-            selectedCoin,
-            isSUISwapIn,
-            _myController.text != ""
-                ? double.parse(_myController.text)
-                : 0) // last value is the amount to swap
+        routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn,
+            _myController.text != "" ? double.parse(_myController.text) : 0)
       },
       child: const Text(
         'SWAP',
@@ -237,7 +241,6 @@ class _ExchangePageState extends State<ExchangePage> {
   }
 
   void _handleSwap() {
-    // Implement your swap logic here
     debugPrint('Your code: ${_myController.text}');
     showDialog(
       context: context,
