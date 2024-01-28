@@ -30,7 +30,6 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
   late Future<List<Candle>> ohlcDataFuture;
   double? marketCap;
   double? totalVolume;
-
   void _goToExchange(input) {
     if (widget.userAccount != null) {
       // Only navigate if userAccount is not null
@@ -371,6 +370,8 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                                   horizontal: 16, vertical: 8),
                               child: ElevatedButton(
                                 onPressed: () {
+                                  print("DEBUGGING");
+                                  print(widget.coinId);
                                   var input = {
                                     "action": "sell",
                                     "coinId": widget.coinId

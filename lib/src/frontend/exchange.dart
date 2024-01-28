@@ -12,29 +12,72 @@ class ExchangePage extends StatefulWidget {
   const ExchangePage({Key? key, required this.userAccount, this.input})
       : super(key: key);
 
-  @override
   _ExchangePageState createState() => _ExchangePageState();
 }
 
+Coin getCoinBySymbol(String symbol) {
+  return COINS.firstWhere(
+    (coin) => coin.symbol == symbol,
+    orElse: () => COINS[0], // Default to the first coin if not found
+  );
+}
+
+@override
 class _ExchangePageState extends State<ExchangePage> {
   final TextEditingController _myController = TextEditingController();
   Coin swapFrom = COINS[0];
   Coin swapTo = COINS[1];
 
   @override
+  void initState() {
+    super.initState();
+
+    // Default values
+    swapFrom = COINS.first;
+    swapTo = COINS[1];
+
+    if (widget.input != null &&
+        widget.input!['action'] == 'sell' &&
+        widget.input!['coinId'] != null) {
+      swapFrom = getCoinBySymbol(widget.input!['coinId']);
+
+      swapTo = COINS[0];
+    } else if (widget.input != null &&
+        widget.input!['action'] == 'buy' &&
+        widget.input!['coinId'] != null) {
+      swapFrom = COINS[0];
+      swapTo = getCoinBySymbol(widget.input!['coinId']);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Exchange',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.black, // Or any color you want for the AppBar
+      ),
       body: Column(
         children: [
-          const SizedBox(height: 80),
-          const Text(
-            'Exchange',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
+          // const Text(
+          //   'Exchange',
+          //   style: TextStyle(
+          //     fontSize: 24,
+          //     fontWeight: FontWeight.bold,
+          //     color: Colors.white,
+          //   ),
+          // ),
           const SizedBox(height: 10),
           Text(
             'Account ${_formattedAddress(widget.userAccount.getAddress())}',
@@ -110,6 +153,13 @@ class _ExchangePageState extends State<ExchangePage> {
             ),
           ),
         ),
+        GestureDetector(
+          onTap: _swapCoins, // Method to swap coins when the icon is tapped
+          child: const Icon(
+            Icons.swap_vert,
+            color: AppColors.buttonBlue,
+          ),
+        ),
         const Icon(
           Icons.arrow_downward,
           color: AppColors.buttonBlue,
@@ -126,6 +176,14 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ],
     );
+  }
+
+  void _swapCoins() {
+    setState(() {
+      final temp = swapFrom;
+      swapFrom = swapTo;
+      swapTo = temp;
+    });
   }
 
   Widget _buildNumPad() {

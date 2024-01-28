@@ -16,9 +16,9 @@ class AppRouter extends StatefulWidget {
 class _AppRouterState extends State<AppRouter> {
   int _selectedIndex = 0; // Start with the first index by default
   late final PageController _pageController;
+  Map<String, dynamic>? exchangeInput;
 
-  SuiAccount?
-      userAccount; // This is the variable we'll reference as the propagated userAccount object
+  SuiAccount? userAccount; // propagated userAccount object
 
   @override
   void initState() {
@@ -43,6 +43,14 @@ class _AppRouterState extends State<AppRouter> {
     });
     _pageController.jumpToPage(index); // Jump without animation
     // or _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeIn); for animation
+  }
+
+  void setExchangeInputAndChangePage(Map<String, dynamic> input) {
+    setState(() {
+      exchangeInput = input;
+      _selectedIndex = 2; // Assuming ExchangePage is at index 2
+      _pageController.jumpToPage(2);
+    });
   }
 
   @override
