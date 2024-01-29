@@ -87,6 +87,7 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   
   final tx = TransactionBlock();
   var coinsAVec;
+  
   if (isSUISwapIn) { // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
     final coinToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
     coinsAVec = tx.makeMoveVec(objects: [coinToSwap]);
