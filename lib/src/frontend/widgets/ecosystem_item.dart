@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:sui/sui.dart';
 
 class EcosystemItem extends StatelessWidget {
   final String label;
@@ -9,7 +8,7 @@ class EcosystemItem extends StatelessWidget {
   final String? change;
   final Widget? chart;
 
-  EcosystemItem({
+  const EcosystemItem({super.key, 
     required this.label,
     required this.value,
     this.change,

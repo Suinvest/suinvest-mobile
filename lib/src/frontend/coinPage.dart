@@ -1,15 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:coingecko_api/data/enumerations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'package:sui/sui.dart';
 import 'package:suiinvest/src/frontend/price_history.dart';
-
 import 'package:suiinvest/src/common/constants/coins.dart';
-import 'package:suiinvest/src/frontend/widgets/cryptoListItem.dart';
+import 'package:suiinvest/src/services/authentication.dart';
 import 'package:suiinvest/src/services/coingecko.dart';
 
 class CryptoListItem extends StatelessWidget {
@@ -19,16 +14,18 @@ class CryptoListItem extends StatelessWidget {
   final String price;
   final String change;
   final String iconUrl;
+  final SuiAccount userAccount;
 
-  const CryptoListItem({
-    Key? key,
-    required this.rank,
-    required this.name,
-    required this.symbol,
-    required this.price,
-    required this.change,
-    required this.iconUrl,
-  }) : super(key: key);
+  const CryptoListItem(
+      {Key? key,
+      required this.rank,
+      required this.name,
+      required this.symbol,
+      required this.price,
+      required this.change,
+      required this.iconUrl,
+      required this.userAccount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +37,8 @@ class CryptoListItem extends StatelessWidget {
             builder: (context) => CoinDetailPage(
               coinId: name,
               price: price,
+              change: change,
+              userAccount: userAccount,
             ),
           ),
         );
@@ -104,26 +103,73 @@ class CryptoListItem extends StatelessWidget {
   }
 }
 
-
 Future<List<CryptoListItem>> fetchCoins() async {
-  final coinMarketData = await fetchCoinPrices(COINS.map((coin) => coin.coinGeckoId).toList(), "usd");
-  if (coinMarketData != null) {
+  final coinMarketData = await fetchCoinPrices(
+      COINS.map((coin) => coin.coinGeckoId).toList(), "usd");
+  final userAccount = await fetchUserAccount();
+  if (coinMarketData != null && userAccount != null) {
     return coinMarketData.map((coin) {
-      return CryptoListItem(
-        rank: coin.marketCapRank ?? 0,
-        name: coin.name,
-        symbol: coin.symbol,
-        price: coin.currentPrice?.toStringAsFixed(2) ?? "0.00",
-        change: "${coin.priceChangePercentage24h?.toStringAsFixed(2) ?? "-"}%",
-        iconUrl: coin.image ?? "",
-      );
+      {
+        return CryptoListItem(
+          rank: coin.marketCapRank ?? 0,
+          name: coin.name,
+          symbol: coin.symbol,
+          price: coin.currentPrice?.toStringAsFixed(2) ?? "0.00",
+          change:
+              "${coin.priceChangePercentage24h?.toStringAsFixed(2) ?? "-"}%",
+          iconUrl: coin.image ?? "",
+          userAccount: userAccount,
+        );
+      }
     }).toList();
   } else {
     throw Exception('Failed to load coins');
   }
 }
 
-class CoinPage extends StatelessWidget {
+class CoinPage extends StatefulWidget {
+  const CoinPage({super.key});
+  @override
+  _CoinPageState createState() => _CoinPageState();
+}
+
+class _CoinPageState extends State<CoinPage> {
+  List<CryptoListItem>? _allCoins;
+  List<CryptoListItem>? _filteredCoins;
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+    _loadCoins();
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _loadCoins() async {
+    _allCoins = await fetchCoins();
+    _filteredCoins = _allCoins;
+  }
+
+  void _onSearchChanged() {
+    final searchQuery = _searchController.text.toLowerCase();
+    if (searchQuery.isEmpty) {
+      _filteredCoins = _allCoins;
+    } else {
+      _filteredCoins = _allCoins?.where((coin) {
+        return coin.name.toLowerCase().contains(searchQuery) ||
+            coin.symbol.toLowerCase().contains(searchQuery);
+      }).toList();
+    }
+    setState(() {}); // Rebuild the UI with the new filtered coins
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,5 +231,11 @@ class CoinPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }

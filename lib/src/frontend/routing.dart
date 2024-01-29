@@ -7,7 +7,7 @@ import 'package:suiinvest/src/frontend/home.dart';
 class AppRouter extends StatefulWidget {
   final SuiAccount? userAccount;
 
-  AppRouter({required this.userAccount});
+  const AppRouter({super.key, required this.userAccount});
 
   @override
   _AppRouterState createState() => _AppRouterState();
@@ -17,7 +17,8 @@ class _AppRouterState extends State<AppRouter> {
   int _selectedIndex = 0; // Start with the first index by default
   late final PageController _pageController;
 
-  SuiAccount? userAccount; // This is the variable we'll reference as the propagated userAccount object
+  SuiAccount?
+      userAccount; // This is the variable we'll reference as the propagated userAccount object
 
   @override
   void initState() {
@@ -25,7 +26,7 @@ class _AppRouterState extends State<AppRouter> {
     userAccount = widget.userAccount; // Initialize userAccount in initState
     if (userAccount == null) {
       // MAKE THIS SET THE INDEX TO THE SIGN IN PAGE
-        // sign in page then will jump to home once the userAccount object is properly fetched
+      // sign in page then will jump to home once the userAccount object is properly fetched
     }
     _pageController = PageController(initialPage: _selectedIndex);
   }
@@ -58,13 +59,15 @@ class _AppRouterState extends State<AppRouter> {
           onPageChanged: (index) {
             setState(() => _selectedIndex = index);
           },
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             //TODO: include more pages here
-            HomePage(userAccount: widget.userAccount!, userBalances: []),
-            CoinPage(),
+            HomePage(userAccount: widget.userAccount!, userBalances: const []),
+            const CoinPage(),
+            // MyApp(),
+            // PriceLineChart(prices: [5.3, 6.4, 8.2, 5.1, 5.6, 7.8]),
             ExchangePage(userAccount: widget.userAccount!),
-          ],
-          physics: NeverScrollableScrollPhysics(), // Disable page swiping
+          ], // Disable page swiping
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: const Color.fromRGBO(105, 143, 246, 1),

@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,12 +69,12 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () {
                   // Implement navigation logic to create account screen
                 },
-                child: Text('Login'),
                 style: TextButton.styleFrom(
                   backgroundColor: Color(0xFF698FF6),
                   foregroundColor: Colors
                       .white, // Sets the color of the text inside the button
                 ),
+                child: Text('Login'),
               ),
             ],
           ),

@@ -10,5 +10,5 @@ void main() async {
   await FlutterConfig.loadEnvVariables();
 
   // Run src/app.dart
-  runApp(MyApp());
+  runApp(const MyApp());
 }

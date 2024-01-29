@@ -134,7 +134,7 @@ class NumPad extends StatelessWidget {
 
               IconButton(
                 onPressed: () => delete(),
-                icon: Icon(
+                icon: const Icon(
                   Icons.backspace_outlined,
                   size: 28,
                   color: Colors.white,
@@ -201,7 +201,7 @@ class NumberButton extends StatelessWidget {
         },
         child: Text(
           number.toString(),
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white, // or any other color you want for the text
             fontSize: 23,

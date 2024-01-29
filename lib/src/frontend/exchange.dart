@@ -7,8 +7,10 @@ import 'package:suiinvest/src/common/constants/coins.dart';
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
+  final Map<String, dynamic>? input;
 
-  const ExchangePage({Key? key, required this.userAccount}) : super(key: key);
+  const ExchangePage({Key? key, required this.userAccount, this.input})
+      : super(key: key);
 
   @override
   _ExchangePageState createState() => _ExchangePageState();
@@ -53,7 +55,10 @@ class _ExchangePageState extends State<ExchangePage> {
           const SizedBox(height: 10),
           _buildNumPad(),
           const SizedBox(height: 30),
-          _buildSwapButton(swapFrom == COINS[0] ? swapTo : swapFrom, swapFrom == COINS[0]), // last arg tells us if SUI is the source token
+          _buildSwapButton(
+              swapFrom == COINS[0] ? swapTo : swapFrom,
+              swapFrom ==
+                  COINS[0]), // last arg tells us if SUI is the source token
         ],
       ),
     );
@@ -158,7 +163,13 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
       onPressed: () => {
-        routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn, _myController.text != "" ? double.parse(_myController.text) : 0) // last value is the amount to swap
+        routeSwaps(
+            widget.userAccount,
+            selectedCoin,
+            isSUISwapIn,
+            _myController.text != ""
+                ? double.parse(_myController.text)
+                : 0) // last value is the amount to swap
       },
       child: const Text(
         'SWAP',

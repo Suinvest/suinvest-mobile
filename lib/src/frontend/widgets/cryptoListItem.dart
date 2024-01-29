@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 class CryptoListItem extends StatelessWidget {
   final int rank;
@@ -22,8 +21,8 @@ class CryptoListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      margin: EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       decoration: BoxDecoration(
         color: Colors.grey[850],
         borderRadius: BorderRadius.circular(12.0),
@@ -35,25 +34,25 @@ class CryptoListItem extends StatelessWidget {
             children: [
               Text(
                 '$rank',
-                style: TextStyle(color: Colors.white, fontSize: 18.0),
+                style: const TextStyle(color: Colors.white, fontSize: 18.0),
               ),
-              SizedBox(width: 12.0),
+              const SizedBox(width: 12.0),
               Image.network(
                 iconUrl,
                 width: 24, // Set your preferred width for the icon
                 height: 24, // Set your preferred height for the icon
               ), // Placeholder icon
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     name,
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    style: const TextStyle(color: Colors.white, fontSize: 16.0),
                   ),
                   Text(
                     symbol,
-                    style: TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
@@ -64,7 +63,7 @@ class CryptoListItem extends StatelessWidget {
             children: [
               Text(
                 price,
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                style: const TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               Text(
                 change,

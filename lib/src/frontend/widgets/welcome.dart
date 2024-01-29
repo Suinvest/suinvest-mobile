@@ -4,11 +4,11 @@ import 'package:suiinvest/src/common/helpers/string.dart';
 
 Widget Welcome(BuildContext context, SuiAccount userAccount) {
   return Container(
-    padding: EdgeInsets.all(16.0),
+    padding: const EdgeInsets.all(16.0),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Welcome Back!',
           style: TextStyle(
             color: Colors.white,
@@ -16,10 +16,10 @@ Widget Welcome(BuildContext context, SuiAccount userAccount) {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 8.0),
+        const SizedBox(height: 8.0),
         Row(
           children: [
-            Text(
+            const Text(
               'Hi, ',
               style: TextStyle(
                 color: Colors.white,
