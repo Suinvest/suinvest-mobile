@@ -10,4 +10,5 @@ final String CETUS_SWAP_COUNT_URL = testnet
     ? "https://api-sui.devcetus.com/v2/sui/swap/count"
     : "https://api-sui.cetus.zone/v2/sui/swap/count";
 final String SUI_CLOCK = "0x6";
-final int SQRT_PRICE_LIMIT = 4295048016;
+const SQRT_PRICE_LIMIT_B2A = "79226673515401279992447579054";
+const SQRT_PRICE_LIMIT_A2B = "4295048017";
