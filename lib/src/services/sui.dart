@@ -86,25 +86,15 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   dynamic pool = await getPool(coin1, coin2);
   
   final tx = TransactionBlock();
-  print (isSUISwapIn);
-  print ("isSUISwapIn");
   var coinsAVec;
   if (isSUISwapIn) { // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
-    final amountToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
-    // print (amountToSwap);
-    print ('amountToSwap');
-    coinsAVec = tx.makeMoveVec(objects: [amountToSwap]);
-    // coinsAVec = tx.makeMoveVec(objects: ["0x2aff8b23f8533c8d37034e7d4ddbbf5b97151f5429aab59772a75be35e8070c3"]);
-
-    print (coinsAVec);
-    print ('coinsAVec');
-    tx.setSenderIfNotSet(userAccount.getAddress());
+    final coinToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
+    coinsAVec = tx.makeMoveVec(objects: [coinToSwap]);
   } else {
     var coinObjectIds = await getCoinObjectIds(userAccount.getAddress(), coin1);
     coinsAVec = tx.makeMoveVec(objects: coinObjectIds.map((x) => tx.object(x)));
-    tx.setSenderIfNotSet(userAccount.getAddress());
   }
-
+  tx.setSenderIfNotSet(userAccount.getAddress());
   tx.setGasBudget(BigInt.from(20000000));
   tx.moveCall(
     "$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${isSUISwapIn ? 'b2a' : 'a2b'}",
@@ -119,18 +109,14 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
       tx.pure(isSUISwapIn ? SQRT_PRICE_LIMIT_B2A : SQRT_PRICE_LIMIT_A2B),         // sqrt_price_limit: u128,
       tx.object(SUI_CLOCK),                 // clock: &Clock*/
   ]);
-  print ("ALL GOOD");
+
   final result = await client.signAndExecuteTransactionBlock(userAccount, tx);
   print("RESTUL");
   print(result.digest);
   return result.digest;
 }
 
-Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool isSUISwapIn, double amountIn) async{
-  print("here");
-  print (coin.symbol);
-  print (amountIn);
-  print (isSUISwapIn);
+Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool isSUISwapIn, double amountIn) async {
   List<String> digests = [];
   String digest1;
 
