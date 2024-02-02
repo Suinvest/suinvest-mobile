@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sui/sui_account.dart';
 import 'package:suiinvest/src/common/constants/colors.dart';
 import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
 import 'package:suiinvest/src/services/sui.dart';
 import 'package:suiinvest/src/common/constants/coins.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
@@ -70,6 +74,7 @@ class _ExchangePageState extends State<ExchangePage> {
 
   @override
   Widget build(BuildContext context) {
+    String result = "hello";
     return Scaffold(
       appBar: AppBar(
         leading: backArrowCheck
@@ -110,8 +115,8 @@ class _ExchangePageState extends State<ExchangePage> {
           const SizedBox(height: 10),
           _buildNumPad(),
           const SizedBox(height: 30),
-          _buildSwapButton(
-              swapFrom == COINS[0] ? swapTo : swapFrom, swapFrom == COINS[0]),
+          _buildSwapButton(swapFrom == COINS[0] ? swapTo : swapFrom,
+              swapFrom == COINS[0], result),
         ],
       ),
     );
@@ -219,7 +224,7 @@ class _ExchangePageState extends State<ExchangePage> {
     }
   }
 
-  Widget _buildSwapButton(Coin selectedCoin, bool isSUISwapIn) {
+  Widget _buildSwapButton(Coin selectedCoin, bool isSUISwapIn, result) {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(AppColors.buttonBlue),
@@ -229,9 +234,42 @@ class _ExchangePageState extends State<ExchangePage> {
           ),
         ),
       ),
-      onPressed: () => {
-        routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn,
-            _myController.text != "" ? double.parse(_myController.text) : 0)
+      onPressed: () async => {
+        result = routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn,
+            _myController.text != "" ? double.parse(_myController.text) : 0),
+        if (result != "")
+          {
+            result = "https://suiexplorer.com/txblock/",
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text('Swap Successful!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.green)),
+                    content: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.black),
+                        children: [
+                          TextSpan(text: 'View the transaction '),
+                          TextSpan(
+                            text: 'here.',
+                            style: TextStyle(
+                                color: AppColors.buttonBlue,
+                                decoration: TextDecoration.underline),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                handleLinkTap(
+                                    result); // Make sure to import 'package:url_launcher/url_launcher.dart';
+                              },
+                          ),
+                        ],
+                      ),
+                    ));
+              },
+            )
+          }
       },
       child: const Text(
         'SWAP',
@@ -251,5 +289,10 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
     );
+  }
+
+  void handleLinkTap(url) {
+    final Uri url = Uri.parse("https://suiexplorer.com/txblock/");
+    launchUrl(url);
   }
 }
