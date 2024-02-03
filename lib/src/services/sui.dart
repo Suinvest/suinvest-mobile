@@ -5,12 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:suiinvest/src/common/constants/addresses.dart';
 import 'package:suiinvest/src/common/constants/coins.dart' as Coins;
 
-final SuiClient client = testnet ? SuiClient(Constants.testnetAPI) : SuiClient(Constants.mainnetAPI);
+final SuiClient client =
+    testnet ? SuiClient(Constants.testnetAPI) : SuiClient(Constants.mainnetAPI);
 
 // return type is bool of success when we store a key -> secret pair
 Future<SuiAccount?> buildUserFromPrivKey(privateKey) async {
   try {
-    late SuiAccount account = SuiAccount.fromPrivateKey(privateKey, SignatureScheme.ED25519);
+    late SuiAccount account =
+        SuiAccount.fromPrivateKey(privateKey, SignatureScheme.ED25519);
     return account;
   } on Exception catch (exception) {
     print(exception);
@@ -22,7 +24,8 @@ Future<SuiAccount?> buildUserFromPrivKey(privateKey) async {
 Future<List<CoinBalance>?> fetchCoinData(address) async {
   try {
     // TODO: make dynamic when we have an account with coins
-    final coins = await client.getAllBalance("0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331");
+    final coins = await client.getAllBalance(
+        "0x02a212de6a9dfa3a69e22387acfbafbb1a9e591bd9d636e7895dcfc8de05f331");
     return coins;
   } on Exception catch (exception) {
     print(exception);
@@ -42,7 +45,9 @@ Future<dynamic> getPool(Coins.Coin coin1, Coins.Coin coin2) async {
   dynamic desiredPool;
   double maxTVL = 0.0;
   pools.forEach((pool) {
-    if (pool["token_a_address"] == coin1.address && pool["token_b_address"] == coin2.address) { // TODO: change to mainnet
+    if (pool["token_a_address"] == coin1.address &&
+        pool["token_b_address"] == coin2.address) {
+      // TODO: change to mainnet
       double TVL = double.parse(pool["tvl_in_usd"]);
       if (TVL > maxTVL) {
         desiredPool = pool;
@@ -56,7 +61,8 @@ Future<dynamic> getPool(Coins.Coin coin1, Coins.Coin coin2) async {
   return desiredPool;
 }
 
-Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async {
+Future<double> getOtherAmount(
+    Coins.Coin coin, bool buying, double amount) async {
   double output = 0.0;
   if (buying) {
     // SUI -> coin
@@ -68,28 +74,28 @@ Future<double> getOtherAmount(Coins.Coin coin, bool buying, double amount) async
 
 Future<List<dynamic>> getCoinObjectIds(String address, Coins.Coin coin) async {
   final objects = await client.getAllCoins(address);
-  final coinIds = objects
-    .data
-    .where((c) => c.coinType == coin.truncatedAddress)
-
-    .map((y) => y.coinObjectId);
+  final coinIds = objects.data
+      .where((c) => c.coinType == coin.truncatedAddress)
+      .map((y) => y.coinObjectId);
 
   print("CoinIDs");
   print(coinIds);
   return coinIds.toList();
 }
 
-Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2, bool isSUISwapIn, int amount) async {
+Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
+    bool isSUISwapIn, int amount) async {
   if (userAccount == null) {
     throw Exception('Failed to fetch userAccount');
   }
 
   dynamic pool = await getPool(coin1, coin2);
-  
+
   final tx = TransactionBlock();
   var coinsAVec;
-  
-  if (isSUISwapIn) { // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
+
+  if (isSUISwapIn) {
+    // if SUI is the input, we can leverage tx.gas to get the amount of SUI to swap
     final coinToSwap = tx.splitCoins(tx.gas, [tx.pure(amount)]);
     coinsAVec = tx.makeMoveVec(objects: [coinToSwap]);
   } else {
@@ -99,18 +105,25 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   tx.setSenderIfNotSet(userAccount.getAddress());
   tx.setGasBudget(BigInt.from(20000000));
   tx.moveCall(
-    "$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${isSUISwapIn ? 'b2a' : 'a2b'}",
-    typeArguments: [coin1.address, coin2.address],
-    arguments: [
-      tx.object(CETUS_GLOBAL_CONFIG_ID),    // config: &GlobalConfig,
-      tx.object(pool["swap_account"]),      // pool: &mut Pool<CoinTypeA, CoinTypeB>,
-      coinsAVec,                            // coins_a: vector<Coin<CoinTypeA>>,
-      tx.pureBool(true),                    // by_amount_in: bool,
-      tx.pure(amount.toString()),                   // amount: u64,
-      tx.pure("0"),            // amount_limit: u64, TODO: make this a real number (this reflects the amount we require to get out in output coin)
-      tx.pure(isSUISwapIn ? SQRT_PRICE_LIMIT_B2A : SQRT_PRICE_LIMIT_A2B),         // sqrt_price_limit: u128,
-      tx.object(SUI_CLOCK),                 // clock: &Clock*/
-  ]);
+      "$CETUS_INTEGRATE_PACKAGE_ID::pool_script::swap_${isSUISwapIn ? 'b2a' : 'a2b'}",
+      typeArguments: [
+        coin1.address,
+        coin2.address
+      ],
+      arguments: [
+        tx.object(CETUS_GLOBAL_CONFIG_ID), // config: &GlobalConfig,
+        tx.object(
+            pool["swap_account"]), // pool: &mut Pool<CoinTypeA, CoinTypeB>,
+        coinsAVec, // coins_a: vector<Coin<CoinTypeA>>,
+        tx.pureBool(true), // by_amount_in: bool,
+        tx.pure(amount.toString()), // amount: u64,
+        tx.pure(
+            "0"), // amount_limit: u64, TODO: make this a real number (this reflects the amount we require to get out in output coin)
+        tx.pure(isSUISwapIn
+            ? SQRT_PRICE_LIMIT_B2A
+            : SQRT_PRICE_LIMIT_A2B), // sqrt_price_limit: u128,
+        tx.object(SUI_CLOCK), // clock: &Clock*/
+      ]);
 
   final result = await client.signAndExecuteTransactionBlock(userAccount, tx);
   print("RESTUL");
@@ -118,7 +131,8 @@ Future<String> swap(SuiAccount? userAccount, Coins.Coin coin1, Coins.Coin coin2,
   return result.digest;
 }
 
-Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool isSUISwapIn, double amountIn) async {
+Future<String> routeSwaps(SuiAccount? userAccount, Coins.Coin coin,
+    bool isSUISwapIn, double amountIn) async {
   List<String> digests = [];
   String digest1;
 
@@ -133,6 +147,6 @@ Future<List<String>> routeSwaps(SuiAccount? userAccount, Coins.Coin coin, bool i
     digest1 = await swap(userAccount, coin, Coins.SUI, false, trueAmount);
     digests.add(digest1);
   }
-  
-  return digests;
+
+  return digest1;
 }
