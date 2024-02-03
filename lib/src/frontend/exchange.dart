@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sui/sui_account.dart';
 import 'package:suiinvest/src/common/constants/colors.dart';
 import 'package:suiinvest/src/frontend/widgets/num_pad.dart';
 import 'package:suiinvest/src/services/sui.dart';
 import 'package:suiinvest/src/common/constants/coins.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExchangePage extends StatefulWidget {
   final SuiAccount userAccount;
@@ -12,29 +16,85 @@ class ExchangePage extends StatefulWidget {
   const ExchangePage({Key? key, required this.userAccount, this.input})
       : super(key: key);
 
-  @override
   _ExchangePageState createState() => _ExchangePageState();
 }
 
+Coin getCoinBySymbol(String symbol) {
+  return COINS.firstWhere(
+    (coin) => coin.coinGeckoId == symbol,
+    orElse: () => COINS[0], // Default to the first coin if not found
+  );
+}
+
+@override
 class _ExchangePageState extends State<ExchangePage> {
-  final TextEditingController _myController = TextEditingController();
+  final TextEditingController _myController = TextEditingController(text: '0');
   Coin swapFrom = COINS[0];
   Coin swapTo = COINS[1];
+  bool backArrowCheck = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _myController.addListener(_onNumberChanged);
+
+    // Default values
+    swapFrom = COINS.first;
+    swapTo = COINS[1];
+
+    if (widget.input != null &&
+        widget.input!['action'] == 'sell' &&
+        widget.input!['coinId'] != null) {
+      backArrowCheck = true;
+      swapFrom = getCoinBySymbol(widget.input!['coinId']);
+
+      swapTo = COINS[0];
+    } else if (widget.input != null &&
+        widget.input!['action'] == 'buy' &&
+        widget.input!['coinId'] != null) {
+      backArrowCheck = true;
+      swapFrom = COINS[0];
+      swapTo = getCoinBySymbol(widget.input!['coinId']);
+    }
+  }
+
+  void _onNumberChanged() {
+    String text = _myController.text;
+    // If the first character is '0' and the length of the text is greater than 1,
+    // this means that a new number has been entered. Replace the '0' with the new number.
+    if (text.startsWith('0') && text.length > 1) {
+      text = text.substring(1);
+      _myController.text = text;
+      // Set the cursor at the end of the new input
+      _myController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _myController.text.length),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    String result = "hello";
     return Scaffold(
+      appBar: AppBar(
+        leading: backArrowCheck
+            ? IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
+        title: const Text(
+          'Exchange',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.black,
+      ),
       body: Column(
         children: [
-          const SizedBox(height: 80),
-          const Text(
-            'Exchange',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
           const SizedBox(height: 10),
           Text(
             'Account ${_formattedAddress(widget.userAccount.getAddress())}',
@@ -43,7 +103,7 @@ class _ExchangePageState extends State<ExchangePage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
           _buildDropdownButton('From', swapFrom, (newValue) {
             setState(() => swapFrom = newValue!);
           }),
@@ -55,10 +115,8 @@ class _ExchangePageState extends State<ExchangePage> {
           const SizedBox(height: 10),
           _buildNumPad(),
           const SizedBox(height: 30),
-          _buildSwapButton(
-              swapFrom == COINS[0] ? swapTo : swapFrom,
-              swapFrom ==
-                  COINS[0]), // last arg tells us if SUI is the source token
+          _buildSwapButton(swapFrom == COINS[0] ? swapTo : swapFrom,
+              swapFrom == COINS[0], result),
         ],
       ),
     );
@@ -97,35 +155,49 @@ class _ExchangePageState extends State<ExchangePage> {
   }
 
   Widget _buildArrowDivider() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 10.0, right: 5.0),
-            child: const Divider(
-              color: Colors.white,
-              height: 1.5,
-              thickness: 1,
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(
+                    left: 10.0, right: 5.0, top: 0, bottom: 0),
+                child: const Divider(
+                  color: Colors.white,
+                  height: 20,
+                  thickness: 1,
+                ),
+              ),
             ),
-          ),
-        ),
-        const Icon(
-          Icons.arrow_downward,
-          color: AppColors.buttonBlue,
-        ),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 5.0, right: 10.0),
-            child: const Divider(
-              color: Colors.white,
-              height: 1.5,
-              thickness: 1,
+            GestureDetector(
+              onTap: _swapCoins, // Method to swap coins when the icon is tapped
+              child: const Icon(
+                Icons.swap_vert,
+                color: AppColors.buttonBlue,
+              ),
             ),
-          ),
-        ),
-      ],
-    );
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 5.0, right: 10.0),
+                child: const Divider(
+                  color: Colors.white,
+                  height: 20,
+                  thickness: 1,
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  void _swapCoins() {
+    setState(() {
+      final temp = swapFrom;
+      swapFrom = swapTo;
+      swapTo = temp;
+    });
   }
 
   Widget _buildNumPad() {
@@ -152,7 +224,7 @@ class _ExchangePageState extends State<ExchangePage> {
     }
   }
 
-  Widget _buildSwapButton(Coin selectedCoin, bool isSUISwapIn) {
+  Widget _buildSwapButton(Coin selectedCoin, bool isSUISwapIn, result) {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(AppColors.buttonBlue),
@@ -162,14 +234,42 @@ class _ExchangePageState extends State<ExchangePage> {
           ),
         ),
       ),
-      onPressed: () => {
-        routeSwaps(
-            widget.userAccount,
-            selectedCoin,
-            isSUISwapIn,
-            _myController.text != ""
-                ? double.parse(_myController.text)
-                : 0) // last value is the amount to swap
+      onPressed: () async => {
+        result = routeSwaps(widget.userAccount, selectedCoin, isSUISwapIn,
+            _myController.text != "" ? double.parse(_myController.text) : 0),
+        if (result != "")
+          {
+            result = "https://suiexplorer.com/txblock/",
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text('Swap Successful!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.green)),
+                    content: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.black),
+                        children: [
+                          TextSpan(text: 'View the transaction '),
+                          TextSpan(
+                            text: 'here.',
+                            style: TextStyle(
+                                color: AppColors.buttonBlue,
+                                decoration: TextDecoration.underline),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                handleLinkTap(
+                                    result); // Make sure to import 'package:url_launcher/url_launcher.dart';
+                              },
+                          ),
+                        ],
+                      ),
+                    ));
+              },
+            )
+          }
       },
       child: const Text(
         'SWAP',
@@ -179,7 +279,6 @@ class _ExchangePageState extends State<ExchangePage> {
   }
 
   void _handleSwap() {
-    // Implement your swap logic here
     debugPrint('Your code: ${_myController.text}');
     showDialog(
       context: context,
@@ -190,5 +289,10 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
     );
+  }
+
+  void handleLinkTap(url) {
+    final Uri url = Uri.parse("https://suiexplorer.com/txblock/");
+    launchUrl(url);
   }
 }

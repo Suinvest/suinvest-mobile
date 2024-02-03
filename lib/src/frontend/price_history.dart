@@ -30,7 +30,6 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
   late Future<List<Candle>> ohlcDataFuture;
   double? marketCap;
   double? totalVolume;
-
   void _goToExchange(input) {
     if (widget.userAccount != null) {
       // Only navigate if userAccount is not null
@@ -144,7 +143,6 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
       backgroundColor: Colors.black,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(40.0),
-        // Adjust the height as needed.
         child: AppBar(
           backgroundColor: Colors.black,
           titleSpacing: 0,
@@ -153,58 +151,22 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: const <Widget>[
-                // IconButton(
-                //   icon: Icon(Icons.arrow_back, color: Colors.white),
-                //   onPressed: () => Navigator.of(context).pop(),
-                // ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  // child: Padding(
-                  //   padding: EdgeInsets.only(
-                  //       left:
-                  //           72.0), // Indent the title to align with the back button, adjust the padding as needed
-                  //   child: Text(
-                  //     '${widget.coinId} Price ${widget.price}',
-                  //     style: TextStyle(
-                  //       color: Color.fromARGB(255, 187, 185, 185),
-                  //       fontSize: 18,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
               ],
             ),
           ),
-          // Remove the title and leading properties as they are now part of flexibleSpace
         ),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Placeholder for the candlestick chart
-            // Container(
-            //   height: 30,
-            //   color: Colors.black,
-            //   child: Center(
-            //     child: Text(
-            //       'Price ${widget.price}',
-            //       style: TextStyle(
-            //           color: Colors.white,
-            //           fontStyle: FontStyle.italic,
-            //           fontSize: 18,
-            //           fontWeight: FontWeight.bold),
-            //     ),
-            //   ),
-            // ),
-
             Container(
               color: Colors.black,
               child: Padding(
-                padding: EdgeInsets.only(
-                    left: 20,
-                    top:
-                        10), // Indent the title to align with the back button, adjust the padding as needed
+                padding: EdgeInsets.only(left: 20, top: 10),
                 child: Text(
                   '${widget.coinId} price',
                   style: TextStyle(
@@ -217,10 +179,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
             Container(
               color: Colors.black,
               child: Padding(
-                padding: EdgeInsets.only(
-                    left: 20,
-                    top:
-                        10), // Indent the title to align with the back button, adjust the padding as needed
+                padding: EdgeInsets.only(left: 20, top: 10),
                 child: Text(
                   '\$ ${widget.price}',
                   style: TextStyle(
@@ -234,10 +193,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
             Container(
               color: Colors.black,
               child: Padding(
-                padding: EdgeInsets.only(
-                    left: 20,
-                    top:
-                        10), // Indent the title to align with the back button, adjust the padding as needed
+                padding: EdgeInsets.only(left: 20, top: 10),
                 child: Text(
                   widget.change,
                   style: TextStyle(
@@ -264,11 +220,6 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                 } else {
                   // Assuming we are interested in the latest OHLC data
                   final latestData = snapshot.data!.last;
-                  // for (final candle in snapshot.data!) {
-                  //   print(
-                  //       '${candle.date}: ${candle.open} ${candle.high} ${candle.low} ${candle.close}');
-                  // }
-                  // print(snapshot.data!);
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -277,8 +228,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                         Container(
                           height: 320,
                           decoration: BoxDecoration(
-                            color:
-                                Colors.black, // Your desired background color
+                            color: Colors.black,
                           ),
                           child: Theme(
                             data: ThemeData.dark(),
@@ -340,21 +290,7 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                                   value: formatNumberAsWord(latestData.low),
                                   iconData: Icons.arrow_downward,
                                 ),
-
-                                // '\$${latestData.open.toStringAsFixed(2)}',
-                                // 'High': formatNumberAsWord(latestData.high),
-                                // 'Low': formatNumberAsWord(latestData.low),
                                 Divider(color: Colors.white54),
-                                // StatisticsRow(
-                                //   data: {
-                                //     'Volume':
-                                //         formatNumberAsWord(latestData.volume),
-                                //     'Close': formatNumberAsWord(latestData.close),
-                                //     'Market Cap':
-                                //         formatNumberAsWord(marketCap ?? 0),
-                                //     // Replace 'N/A' with an appropriate default or error message
-                                //   },
-                                // ),
                               ],
                             ),
                           ),
@@ -371,23 +307,21 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                                   horizontal: 16, vertical: 8),
                               child: ElevatedButton(
                                 onPressed: () {
+                                  print("DEBUGGING");
+                                  print(widget.coinId);
                                   var input = {
                                     "action": "sell",
-                                    "coinId": widget.coinId
+                                    "coinId": widget.coinId.toLowerCase()
                                   };
                                   _goToExchange(input);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors
-                                      .transparent, // Transparent background
-                                  foregroundColor:
-                                      AppColors.buttonBlue, // Text color
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: AppColors.buttonBlue,
                                   side: BorderSide(
-                                      color: AppColors.buttonBlue,
-                                      width: 2), // Border color and width
+                                      color: AppColors.buttonBlue, width: 2),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        20), // Rounded corners
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 50, vertical: 15),
@@ -404,17 +338,15 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
                                   // BUY logic here
                                   var input = {
                                     "action": "buy",
-                                    "coinId": widget.coinId
+                                    "coinId": widget.coinId.toLowerCase()
                                   };
                                   _goToExchange(input);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors
-                                      .buttonBlue, // Button background color
-                                  foregroundColor: Colors.white, // Text color
+                                  backgroundColor: AppColors.buttonBlue,
+                                  foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        30), // Rounded corners
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 50, vertical: 15),
@@ -440,13 +372,13 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
 class StatisticsRow extends StatelessWidget {
   final String title;
   final String value;
-  final IconData iconData; // Add this line
+  final IconData iconData;
 
   const StatisticsRow({
     Key? key,
     required this.title,
     required this.value,
-    required this.iconData, // Add this line
+    required this.iconData,
   }) : super(key: key);
 
   @override
@@ -454,14 +386,11 @@ class StatisticsRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Wrap the title into a Row to include an Icon before it
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(iconData,
-                color: AppColors.buttonBlue, size: 20), // Add this line
-            SizedBox(
-                width: 8), // Add some spacing between the icon and the title
+            Icon(iconData, color: AppColors.buttonBlue, size: 20),
+            SizedBox(width: 8),
             Text(title,
                 style: TextStyle(
                     color: Colors.white,
@@ -474,46 +403,6 @@ class StatisticsRow extends StatelessWidget {
     );
   }
 }
-
-// class StatisticsRow extends StatelessWidget {
-//   final Map<String, String> data;
-
-//   const StatisticsRow({
-//     Key? key,
-//     required this.data,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//       children: data.entries.map((entry) {
-//         return Expanded(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: <Widget>[
-//               Text(
-//                 entry.key,
-//                 style: TextStyle(
-//                   color: Colors.white70,
-//                   fontSize: 14,
-//                 ),
-//               ),
-//               Text(
-//                 entry.value,
-//                 style: TextStyle(
-//                   color: Colors.white,
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         );
-//       }).toList(),
-//     );
-//   }
-// }
 
 class ActionButton extends StatelessWidget {
   final String title;

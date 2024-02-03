@@ -62,9 +62,9 @@ class CryptoListItem extends StatelessWidget {
                 SizedBox(width: 12.0),
                 Image.network(
                   iconUrl,
-                  width: 24, // Set your preferred width for the icon
-                  height: 24, // Set your preferred height for the icon
-                ), // Placeholder icon
+                  width: 24,
+                  height: 24,
+                ),
                 SizedBox(width: 8.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,21 +153,24 @@ class _CoinPageState extends State<CoinPage> {
   }
 
   void _loadCoins() async {
-    _allCoins = await fetchCoins();
-    _filteredCoins = _allCoins;
+    var coins = await fetchCoins();
+    setState(() {
+      _allCoins = coins;
+      _filteredCoins = coins;
+    });
   }
 
   void _onSearchChanged() {
-    final searchQuery = _searchController.text.toLowerCase();
-    if (searchQuery.isEmpty) {
-      _filteredCoins = _allCoins;
-    } else {
+    setState(() {
       _filteredCoins = _allCoins?.where((coin) {
-        return coin.name.toLowerCase().contains(searchQuery) ||
-            coin.symbol.toLowerCase().contains(searchQuery);
+        return coin.name
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase()) ||
+            coin.symbol
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase());
       }).toList();
-    }
-    setState(() {}); // Rebuild the UI with the new filtered coins
+    });
   }
 
   @override
@@ -182,15 +185,12 @@ class _CoinPageState extends State<CoinPage> {
             children: [
               Text(
                 'Track Coins',
-                textAlign: TextAlign.center, // Center the text
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20.0, // Adjust the font size as needed
-                  fontWeight: FontWeight.normal,
-                ),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white, fontSize: 20.0),
               ),
               SizedBox(height: 20),
               TextField(
+                controller: _searchController,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   isDense: true,
@@ -208,24 +208,15 @@ class _CoinPageState extends State<CoinPage> {
               ),
               SizedBox(height: 20),
               Expanded(
-                child: FutureBuilder<List<CryptoListItem>>(
-                  future: fetchCoins(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (snapshot.hasData) {
-                      List<CryptoListItem> coins = snapshot.data!;
-                      return ListView(
-                        children: coins,
-                      );
-                    } else {
-                      return Center(child: Text('No coins found.'));
-                    }
-                  },
-                ),
-              )
+                child: _filteredCoins == null
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: _filteredCoins!.length,
+                        itemBuilder: (context, index) {
+                          return _filteredCoins![index];
+                        },
+                      ),
+              ),
             ],
           ),
         ),

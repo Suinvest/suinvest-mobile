@@ -55,12 +55,17 @@ Future<String> retrieveSecret(key) async {
   }
 }
 
-
 // fetches user account from keystore and constructs a SuiAccount object
 Future<SuiAccount?> fetchUserAccount() async {
   try {
     final privKey = await retrieveSecret("private_key");
-    return buildUserFromPrivKey(privKey);
+    if (privKey.isNotEmpty) {
+      // Build the user account from the private key
+      return buildUserFromPrivKey(privKey);
+    } else {
+      // If the private key is empty, return null to indicate no account
+      return null;
+    }
   } on Exception catch (exception) {
     print(exception);
     return null;
