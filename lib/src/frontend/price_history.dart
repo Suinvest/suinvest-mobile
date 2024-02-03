@@ -62,36 +62,6 @@ class _CoinDetailPageState extends State<CoinDetailPage> {
     }
   }
 
-  // Future<List<Candle>> fetchCoinCandles(String coinId) async {
-  //   coinId = coinId.toLowerCase();
-  //   final uri = Uri.parse(
-  //       'https://api.coingecko.com/api/v3/coins/$coinId/ohlc?vs_currency=usd&days=7');
-  //   try {
-  //     final response = await http.get(uri);
-
-  //     if (response.statusCode == 200) {
-  //       final ohlcData = json.decode(response.body) as List;
-  //       return ohlcData.map((ohlcEntry) {
-  //         return Candle(
-  //           date: DateTime.fromMillisecondsSinceEpoch(ohlcEntry[0]),
-  //           open: (ohlcEntry[1] as num).toDouble(),
-  //           high: (ohlcEntry[2] as num).toDouble(),
-  //           low: (ohlcEntry[3] as num).toDouble(),
-  //           close: (ohlcEntry[4] as num).toDouble(),
-  //           volume: 1, // Volume is not provided in this example
-  //         );
-  //       }).toList();
-  //     } else {
-  //       print(
-  //           'Request to $uri failed with status ${response.statusCode}: ${response.body}');
-  //       throw Exception(
-  //           'Failed to load candle data with status code: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception when calling $uri: $e');
-  //     throw Exception('Failed to load candle data: $e');
-  //   }
-  // }
   Future<List<Candle>> fetchCoinCandles(String coinId) async {
     coinId = coinId.toLowerCase();
     final ohlcUri = Uri.parse(
