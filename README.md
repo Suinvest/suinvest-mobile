@@ -45,7 +45,7 @@ The main app has three sections - home page, coins page, and exchange page:
 
 ## Tech Stack / Architecture
 
-<img src="https://cdn.discordapp.com/attachments/1202898936625500160/1202899009040158742/Sui_Technical_Architecture.png?ex=65cf2200&is=65bcad00&hm=fb222efd5a7afc38e9074d17743f4c5c5c822f2e3e785aee001600613c7a1693&"><br>
+<img src="assets/images/Sui Technical Architecture.png"><br>
 
 Suinvest was developed using [Flutter](https://flutter.dev/). As an educational project, Flutter is advantageous because of its relative simplicity to understand and large package presence. This [tutorial](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0) proved useful for getting started.
 
@@ -61,7 +61,7 @@ Important Integrations:
 
 ## Project Structure
 
-<img src="https://cdn.discordapp.com/attachments/1202898936625500160/1203174131181551677/Screenshot_2024-02-02_at_7.04.21_PM.png?ex=65d0223a&is=65bdad3a&hm=a62f052a2c1b523631cfeb8e37d5f1696dabef677c6c273c0a5c7b8066adf3fa&"><br>
+<img src="assets/images/Sui File Graph.png"><br>
 *This image was generated using [Visualizing a Codebase](https://githubnext.com/projects/repo-visualization/#integrate-into-your-own-projects)*
 
 ### Important Files / Directories
